@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>함수와 극한 인터랙티브 풀이</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js annotation plugin -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.2.1/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        .slider-container {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #d1d5db;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-8">
+            <h1 class="text-2xl font-bold text-indigo-700 mb-4 border-b pb-2">
+                <i class="fas fa-chart-line mr-2"></i>함수의 극한과 그래프 추론
+            </h1>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6 text-lg">
+                <p>실수 \( p \) 에 대하여 함수 \( f(x) \) 를</p>
+                <div class="my-4 text-center overflow-x-auto">
+                    \[
+                    f(x) = \begin{cases}
+                    x & (x \le 1) \\
+                    x + p & (x > 1)
+                    \end{cases}
+                    \]
+                </div>
+                <p>이라 하고, 실수 \( t \) 에 대하여 함수 \( g(t) \) 를</p>
+                <div class="my-4 text-center overflow-x-auto">
+                    \[ g(t) = \lim_{x \to t+} f(x) + \lim_{x \to (t+2)-} f(x) \]
+                </div>
+                <p>라 하자. 함수 \( g(t) \) 에 대하여 보기에서 옳은 것만을 있는 대로 고른 것은?</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- 좌측: 그래프 영역 -->
+                <div class="bg-white border rounded-lg p-4 shadow-sm relative">
+                    <h3 class="text-lg font-semibold text-center mb-2">함수 \( y = f(x) \) 의 그래프</h3>
+                    <div style="height: 350px;">
+                        <canvas id="mathChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 우측: 변수 컨트롤 및 g(t) 계산 결과 영역 -->
+                <div class="bg-white border rounded-lg p-4 shadow-sm flex flex-col justify-center">
+                    <div class="mb-6">
+                        <label for="p-slider" class="block text-sm font-medium text-gray-700 mb-1">
+                            상수 \( p \) 의 값: <span id="p-value" class="font-bold text-indigo-600">0</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" min="-6" max="4" value="0" step="1" class="slider" id="p-slider">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">슬라이더를 움직여 \( x > 1 \) 구간의 그래프 높낮이를 조절해 보세요.</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="t-slider" class="block text-sm font-medium text-gray-700 mb-1">
+                            실수 \( t \) 의 값: <span id="t-value" class="font-bold text-green-600">-2</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" min="-3" max="2" value="-2" step="0.1" class="slider" id="t-slider">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">슬라이더를 움직여 극한을 구하는 위치를 변경해 보세요.</p>
+                    </div>
+
+                    <!-- g(t) 실시간 계산 결과 -->
+                    <div class="bg-indigo-50 rounded-lg p-4 border border-indigo-100">
+                        <h4 class="font-semibold text-indigo-800 mb-2 border-b border-indigo-200 pb-1">현재 상태에서 \( g(t)
+                            \) 계산</h4>
+                        <div id="calc-details" class="text-sm space-y-2">
+                            <!-- JS로 내용 채워짐 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <h2 class="text-xl font-bold mb-4">보기 분석하기</h2>
+                <div class="flex space-x-2 mb-6">
+                    <button onclick="showStep(1)" id="btn-step1"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded font-medium hover:bg-indigo-700 transition">ㄱ.
+                        \( g(-1)=0 \)</button>
+                    <button onclick="showStep(2)" id="btn-step2"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded font-medium hover:bg-gray-300 transition">ㄴ.
+                        증가 함수 판별</button>
+                    <button onclick="showStep(3)" id="btn-step3"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded font-medium hover:bg-gray-300 transition">ㄷ.
+                        부등식 조건</button>
+                </div>
+
+                <!-- 보기 ㄱ -->
+                <div id="step1" class="step active bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="font-bold text-lg mb-3">ㄱ. \( g(-1)=0 \)</h3>
+                    <p class="mb-4">\( t = -1 \) 일 때, \( g(-1) \) 의 값을 계산해 봅시다.</p>
+                    <div class="bg-white p-4 rounded border mb-4">
+                        <p>\( g(-1) = \lim_{x \to -1+} f(x) + \lim_{x \to 1-} f(x) \)</p>
+                        <p class="mt-2 text-sm text-gray-600">위 그래프에서 \( t \) 슬라이더를 -1로 맞추고 확인해 보세요. (이때 \( p \) 값은
+                            상관없습니다.)</p>
+                    </div>
+                    <p class="mb-2">우극한: \( \lim_{x \to -1+} f(x) = \lim_{x \to -1+} x = -1 \)</p>
+                    <p class="mb-4">좌극한: \( \lim_{x \to 1-} f(x) = \lim_{x \to 1-} x = 1 \)</p>
+                    <p class="font-semibold text-lg text-indigo-700 mb-4 border-l-4 border-indigo-500 pl-3">따라서 \( g(-1)
+                        = -1 + 1 = 0 \) 이므로 <span class="text-green-600">참</span>입니다.</p>
+                    <button onclick="showStep(2)"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">다음 보기로</button>
+                </div>
+
+                <!-- 보기 ㄴ -->
+                <div id="step2" class="step bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="font-bold text-lg mb-3">ㄴ. \( p > 0 \) 일 때 \( t \) 의 값이 증가하면 \( g(t) \) 의 값도 증가한다.</h3>
+                    <p class="mb-4">\( p \) 슬라이더를 0보다 큰 값(예: 2)으로 설정하고, \( t \) 슬라이더를 오른쪽으로 서서히 움직여 보세요.</p>
+                    <div class="bg-white p-4 rounded border mb-4 text-sm">
+                        <p>\( f(x) \) 식을 이용해 \( g(t) \) 를 구간별로 정의해 봅시다.</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1">
+                            <li><strong>\( t+2 \le 1 \implies t \le -1 \) 인 경우:</strong><br>
+                                \( \lim_{x \to t+} f(x) = t \), \( \lim_{x \to (t+2)-} f(x) = t+2 \)<br>
+                                \( \therefore g(t) = t + (t+2) = 2t + 2 \) (증가)
+                            </li>
+                            <li><strong>\( t \le 1 \) 이고 \( t+2 > 1 \implies -1 < t \le 1 \) 인 경우:</strong><br>
+                                        \( \lim_{x \to t+} f(x) = t \), \( \lim_{x \to (t+2)-} f(x) = (t+2)+p \)<br>
+                                        \( \therefore g(t) = t + t + 2 + p = 2t + p + 2 \) (증가)
+                            </li>
+                            <li><strong>\( t > 1 \) 인 경우:</strong><br>
+                                \( \lim_{x \to t+} f(x) = t+p \), \( \lim_{x \to (t+2)-} f(x) = (t+2)+p \)<br>
+                                \( \therefore g(t) = t+p + t+2+p = 2t + 2p + 2 \) (증가)
+                            </li>
+                        </ul>
+                    </div>
+                    <p class="mb-4">구간의 경계점인 \( t=-1 \) 과 \( t=1 \) 에서 어떻게 되는지 확인해야 합니다.</p>
+                    <p class="mb-2">1. \( t \to -1- \) 일 때 \( g(t) \to 0 \), \( g(-1) = p \)<br>
+                        <span class="text-gray-600 text-sm">(\( t=-1 \) 일 때 정확한 식: \( \lim_{x\to-1+} x + \lim_{x\to1-} x
+                            = -1 + 1 = 0 \) 이 아닙니다. 위 구간별 정의에서 \( t=-1 \)은 등호가 없으므로 대입 불가. 실제 극한식으로 접근: \( t=-1 \) 이면 \(
+                            g(-1) = 0 \). 한편 우극한 \( \lim_{t\to-1+} g(t) = \lim_{t\to-1+} (2t+p+2) = p \))</span><br>
+                        <span class="text-red-500 font-bold">앗, 계산에 오류가 있었습니다! 다시 살펴보겠습니다.</span>
+                    </p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                        <p class="font-bold mb-2">정확한 \( g(t) \) 식 유도</p>
+                        <p>\( g(t) = \lim_{x \to t+} f(x) + \lim_{x \to (t+2)-} f(x) \)</p>
+                        <p class="mt-2">- \( t < -1 \) 일 때: \( g(t)=t + (t+2)=2t+2 \)</p>
+                                <p>- \( t = -1 \) 일 때: \( g(-1) = -1 + 1 = 0 \)</p>
+                                <p>- \( -1 < t < 1 \) 일 때: \( g(t)=t + (t+2+p)=2t+p+2 \)</p>
+                                        <p>- \( t = 1 \) 일 때: \( g(1) = (1+p) + (1+2+p) = 2p+4 \) (우극한이므로 \( t=1 \)이면 \(
+                                            x\to 1+ \). \( f(1+) = 1+p \))</p>
+                                        <p>- \( t > 1 \) 일 때: \( g(t) = (t+p) + (t+2+p) = 2t+2p+2 \)</p>
+                    </div>
+
+                    <p class="mb-4">이제 \( t=-1 \) 주변을 살펴봅시다. \( t \) 가 -1보다 약간 작을 때 (\( t \to -1- \)) \( g(t) \to 0 \)
+                        입니다. \( g(-1) = 0 \) 입니다.<br>
+                        하지만 \( t \) 가 -1보다 약간 클 때 (\( t \to -1+ \)) \( g(t) \to p \) 입니다.<br>
+                        만약 \( p > 0 \) 이라면, \( t \) 가 -1을 지나면서 \( g(t) \) 값은 0에서 \( p \) 로 갑자기 점프(증가)합니다.<br>
+                        \( t=1 \) 주변도 확인해 봅시다. \( t \to 1- \) 일 때 \( g(t) \to p+4 \). \( t=1 \) 일 때 \( g(1) = 2p+4
+                        \).<br>
+                        \( p > 0 \) 이면 \( p+4 < 2p+4 \) 이므로 여기서도 갑자기 점프(증가)합니다.</p>
+
+                            <p class="font-semibold text-lg text-indigo-700 mb-4 border-l-4 border-indigo-500 pl-3">각
+                                구간에서 기울기가 양수(2)이고, 불연속점에서도 값이 커지는 방향으로 점프하므로 전체적으로 증가합니다. 따라서 <span
+                                    class="text-green-600">참</span>입니다.</p>
+
+                            <button onclick="showStep(3)"
+                                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">다음 보기로</button>
+                </div>
+
+                <!-- 보기 ㄷ -->
+                <div id="step3" class="step bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="font-bold text-lg mb-3">ㄷ. \( g(m) > g(m+1) > g(m+2) \) 인 정수 \( m \) 이 존재하도록 하는 정수 \( p
+                        \) 의 최댓값은 -4이다.</h3>
+                    <p class="mb-4">이 부등식은 특정 정수 간격에서 \( g(t) \) 가 '감소'하는 형태를 띠어야 함을 의미합니다. 앞에서 \( g(t) \) 는 구간 내에서는 항상
+                        기울기가 2로 증가함을 보았습니다. 즉, 함숫값이 감소하려면 <strong>불연속점에서의 '점프'가 아래로(음의 방향으로) 크게 일어나야 합니다.</strong></p>
+
+                    <p class="mb-2">정수 \( m \) 에 대해 함숫값을 나열해 봅시다.</p>
+                    <div class="bg-white p-4 rounded border mb-4 text-sm font-mono overflow-x-auto">
+                        <p>m 이 매우 작을 때 (예: m \le -3): g(m) = 2m+2 (증가구간)</p>
+                        <p>m = -2 일 때: g(-2) = -2</p>
+                        <p>m = -1 일 때: g(-1) = 0</p>
+                        <p>m = 0 일 때: g(0) = p+2</p>
+                        <p>m = 1 일 때: g(1) = 2p+4</p>
+                        <p>m = 2 일 때: g(2) = 2p+6</p>
+                        <p>m \ge 2 일 때: g(m) = 2m+2p+2 (증가구간)</p>
+                    </div>
+
+                    <p class="mb-4">연속된 세 정수에서 감소하는 패턴이 나오려면, 불연속점이 포함된 구간이어야 합니다. 가능한 \( m \) 의 후보를 대입해 봅시다.</p>
+
+                    <div class="space-y-4 mb-6">
+                        <!-- 경우 1 -->
+                        <div class="border-l-4 border-blue-400 pl-3">
+                            <p class="font-semibold">후보 1: \( m = -2 \)</p>
+                            <p>\( g(-2) > g(-1) > g(0) \implies -2 > 0 > p+2 \)</p>
+                            <p class="text-red-500">(-2 > 0) 은 거짓이므로 성립 불가.</p>
+                        </div>
+
+                        <!-- 경우 2 -->
+                        <div class="border-l-4 border-blue-400 pl-3">
+                            <p class="font-semibold">후보 2: \( m = -1 \)</p>
+                            <p>\( g(-1) > g(0) > g(1) \implies 0 > p+2 > 2p+4 \)</p>
+                            <p>첫 번째 부등식: \( 0 > p+2 \implies p < -2 \)</p>
+                                    <p>두 번째 부등식: \( p+2 > 2p+4 \implies p < -2 \)</p>
+                                            <p class="text-green-600 font-bold">결론: \( p < -2 \) 이면 성립합니다. 이때 정수 \( p \)
+                                                    의 최댓값은 -3 입니다.</p>
+                        </div>
+
+                        <!-- 경우 3 -->
+                        <div class="border-l-4 border-blue-400 pl-3">
+                            <p class="font-semibold">후보 3: \( m = 0 \)</p>
+                            <p>\( g(0) > g(1) > g(2) \implies p+2 > 2p+4 > 2p+6 \)</p>
+                            <p class="text-red-500">두 번째 부등식 (\( 2p+4 > 2p+6 \)) 은 항상 거짓이므로 성립 불가.</p>
+                        </div>
+                    </div>
+
+                    <p class="font-semibold text-lg text-indigo-700 mb-4 border-l-4 border-indigo-500 pl-3">
+                        분석 결과, 조건을 만족하는 정수 \( p \) 의 최댓값은 -4가 아니라 <strong>-3</strong> 입니다. 따라서 보기 ㄷ은 <span
+                            class="text-red-600">거짓</span>입니다.
+                    </p>
+
+                    <div class="bg-green-100 border border-green-300 p-4 rounded-lg text-center mt-6">
+                        <h3 class="font-bold text-xl text-green-800">최종 정답</h3>
+                        <p class="text-lg mt-2">옳은 보기는 <strong>ㄱ, ㄴ</strong> 이므로 정답은 <strong>②번</strong> 입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js 초기화 변수
+        let chart;
+        const ctx = document.getElementById('mathChart').getContext('2d');
+
+        // 상태 변수
+        let currentP = 0;
+        let currentT = -2;
+
+        // f(x) 계산 함수
+        function f(x, p) {
+            if (x <= 1) return x;
+            return x + p;
+        }
+
+        // 그래프 데이터 생성 함수
+        function generateGraphData(p) {
+            const data1 = []; // x <= 1
+            const data2 = []; // x > 1
+
+            for (let x = -4; x <= 1; x += 0.1) {
+                data1.push({ x: parseFloat(x.toFixed(1)), y: f(x, p) });
+            }
+            // 끊어짐을 명확히 하기 위해 약간 띄움
+            for (let x = 1.01; x <= 5; x += 0.1) {
+                data2.push({ x: parseFloat(x.toFixed(2)), y: f(x, p) });
+            }
+
+            return { data1, data2 };
+        }
+
+        // 극한값 계산 (부동소수점 오차 방지를 위해 약간 떨어진 값 사용)
+        function calcRightLimit(t, p) {
+            const epsilon = 0.0001;
+            return f(t + epsilon, p);
+        }
+
+        function calcLeftLimit(t, p) {
+            const epsilon = 0.0001;
+            return f(t - epsilon, p);
+        }
+
+        // 그래프 그리기 함수
+        function drawChart() {
+            const { data1, data2 } = generateGraphData(currentP);
+
+            // t 위치 표시를 위한 어노테이션
+            const annotations = {
+                lineT: {
+                    type: 'line',
+                    xMin: currentT,
+                    xMax: currentT,
+                    borderColor: 'rgba(34, 197, 94, 0.5)', // Green
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                        display: true,
+                        content: 't',
+                        position: 'start'
+                    }
+                },
+                lineTPlus2: {
+                    type: 'line',
+                    xMin: currentT + 2,
+                    xMax: currentT + 2,
+                    borderColor: 'rgba(239, 68, 68, 0.5)', // Red
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                        display: true,
+                        content: 't+2',
+                        position: 'start'
+                    }
+                }
+            };
+
+            // 점 찍기 (x=1 에서의 함숫값)
+            annotations.point1 = {
+                type: 'point',
+                xValue: 1,
+                yValue: 1,
+                backgroundColor: 'blue',
+                radius: 4
+            };
+            // 빈 점 찍기 (x=1 우극한)
+            annotations.point2 = {
+                type: 'point',
+                xValue: 1,
+                yValue: 1 + currentP,
+                backgroundColor: 'white',
+                borderColor: 'red',
+                borderWidth: 2,
+                radius: 4
+            };
+
+            const config = {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'f(x) (x ≤ 1)',
+                            data: data1,
+                            borderColor: 'blue',
+                            backgroundColor: 'blue',
+                            showLine: true,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'f(x) (x > 1)',
+                            data: data2,
+                            borderColor: 'red',
+                            backgroundColor: 'red',
+                            showLine: true,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            min: -4,
+                            max: 5,
+                            grid: { color: '#e5e7eb' },
+                            title: { display: true, text: 'x' }
+                        },
+                        y: {
+                            min: -5,
+                            max: 8,
+                            grid: { color: '#e5e7eb' },
+                            title: { display: true, text: 'y' }
+                        }
+                    },
+                    plugins: {
+                        annotation: { annotations },
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    animation: { duration: 0 } // 슬라이더 조작 시 부드럽게 보이도록 애니메이션 끔
+                }
+            };
+
+            if (chart) {
+                chart.destroy();
+            }
+            chart = new Chart(ctx, config);
+        }
+
+        // g(t) 텍스트 업데이트
+        function updateCalcDetails() {
+            // 실제 수식에 따른 정확한 값 계산 (오차 제거)
+            let rightLimitTxt, leftLimitTxt, gtValue;
+            let rightVal, leftVal;
+
+            // t+ 우극한
+            if (currentT < 1) { rightVal = currentT; rightLimitTxt = `${currentT.toFixed(1)}`; }
+            else if (currentT === 1) { rightVal = 1 + currentP; rightLimitTxt = `1 + (${currentP}) = ${rightVal}`; }
+            else { rightVal = currentT + currentP; rightLimitTxt = `${currentT.toFixed(1)} + (${currentP}) = ${rightVal.toFixed(1)}`; }
+
+            // (t+2)- 좌극한
+            const tPlus2 = currentT + 2;
+            if (tPlus2 <= 1) { leftVal = tPlus2; leftLimitTxt = `${tPlus2.toFixed(1)}`; }
+            else { leftVal = tPlus2 + currentP; leftLimitTxt = `${tPlus2.toFixed(1)} + (${currentP}) = ${leftVal.toFixed(1)}`; }
+
+            // t=-1 인 경우의 예외 처리 (수식상 정의)
+            if (currentT === -1) {
+                // 수식에 의한 정확한 값
+                rightVal = -1;
+                leftVal = 1;
+                rightLimitTxt = "-1";
+                leftLimitTxt = "1";
+            }
+
+            gtValue = rightVal + leftVal;
+
+            const detailsHtml = `
+                <div class="flex justify-between border-b border-indigo-100 pb-1">
+                    <span class="text-green-700 font-medium">① \( \\lim_{x \\to ${currentT.toFixed(1)}+} f(x) \)</span>
+                    <span class="font-mono">${rightLimitTxt}</span>
+                </div>
+                <div class="flex justify-between border-b border-indigo-100 pb-1 pt-1">
+                    <span class="text-red-700 font-medium">② \( \\lim_{x \\to ${(currentT + 2).toFixed(1)}-} f(x) \)</span>
+                    <span class="font-mono">${leftLimitTxt}</span>
+                </div>
+                <div class="flex justify-between pt-1 font-bold text-lg">
+                    <span>\( g(${currentT.toFixed(1)}) = ① + ② \)</span>
+                    <span>${gtValue.toFixed(1)}</span>
+                </div>
+            `;
+            document.getElementById('calc-details').innerHTML = detailsHtml;
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('calc-details')]);
+            }
+        }
+
+        // 이벤트 리스너 설정
+        document.getElementById('p-slider').addEventListener('input', function (e) {
+            currentP = parseInt(e.target.value);
+            document.getElementById('p-value').innerText = currentP;
+            drawChart();
+            updateCalcDetails();
+        });
+
+        document.getElementById('t-slider').addEventListener('input', function (e) {
+            currentT = parseFloat(e.target.value);
+            document.getElementById('t-value').innerText = currentT.toFixed(1);
+            drawChart();
+            updateCalcDetails();
+        });
+
+        // 보기 스텝 제어 함수
+        function showStep(stepNum) {
+            // 버튼 스타일 업데이트
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`btn-step${i}`);
+                if (i === stepNum) {
+                    btn.classList.replace('bg-gray-200', 'bg-indigo-600');
+                    btn.classList.replace('text-gray-700', 'text-white');
+                } else {
+                    btn.classList.replace('bg-indigo-600', 'bg-gray-200');
+                    btn.classList.replace('text-white', 'text-gray-700');
+                }
+            }
+
+            // 내용 보여주기
+            document.querySelectorAll('.step').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById('step' + stepNum).classList.add('active');
+
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // 초기화 실행
+        window.onload = function () {
+            drawChart();
+            updateCalcDetails();
+            renderMath();
+        };
+
+        function renderMath() {
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+    </script>
+</body>
+
+</html>
