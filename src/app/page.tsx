@@ -46,6 +46,11 @@ export default function Home() {
       try {
         const res = await fetch(`/api/problems?subject=${encodeURIComponent(subject)}&chapter=${encodeURIComponent(chapter)}`);
         const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || '문제를 불러오지 못했습니다.');
+        }
+
         if (data.problems && data.problems.length > 0) {
           const sorted = [...data.problems].sort((a, b) => a.problemNumber - b.problemNumber);
           setProblems(sorted);
@@ -54,9 +59,11 @@ export default function Home() {
           setProblems([]);
           setProblemNumber('');
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to fetch problems:', err);
-        setError('문제 목록을 불러오는 중 오류가 발생했습니다.');
+        setError(err.message || '문제 목록을 불러오는 중 오류가 발생했습니다. 데이터베이스 연결을 확인해주세요.');
+        setProblems([]);
+        setProblemNumber('');
       } finally {
         setProblemsLoading(false);
       }
