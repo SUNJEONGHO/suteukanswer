@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { FileText, ExternalLink, Plus, Edit } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const client = await clientPromise;
   const db = client.db('math_platform');
