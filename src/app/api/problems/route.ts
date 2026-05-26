@@ -70,10 +70,10 @@ export async function POST(request: Request) {
       { message: 'Problem created successfully', id: result.insertedId },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in POST /api/problems:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: error.message || String(error) },
       { status: 500 }
     );
   }
@@ -106,10 +106,10 @@ export async function GET(request: Request) {
     const problems = await collection.find(query).sort({ problemNumber: 1 }).toArray();
 
     return NextResponse.json({ problems });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/problems:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: error.message || String(error) },
       { status: 500 }
     );
   }
@@ -140,10 +140,10 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ message: 'Problem deleted successfully' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in DELETE /api/problems:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: error.message || String(error) },
       { status: 500 }
     );
   }

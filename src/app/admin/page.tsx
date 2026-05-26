@@ -1,14 +1,84 @@
 import clientPromise from '@/lib/mongodb';
 import Link from 'next/link';
-import { FileText, ExternalLink, Plus, Edit } from 'lucide-react';
+import { FileText, ExternalLink, Plus, Edit, AlertCircle, RefreshCw } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const client = await clientPromise;
-  const db = client.db('math_platform');
-  const problems = await db.collection('problems').find().sort({ subject: 1, chapter: 1, problemNumber: 1 }).toArray();
+  let problems: any[] = [];
+  let connectionError = '';
+
+  try {
+    const client = await clientPromise;
+    const db = client.db('math_platform');
+    problems = await db.collection('problems').find().sort({ subject: 1, chapter: 1, problemNumber: 1 }).toArray();
+  } catch (error: any) {
+    console.error('Failed to fetch problems in AdminDashboard:', error);
+    connectionError = error.message || String(error);
+  }
+
+  if (connectionError) {
+    const isIpError = connectionError.includes('SSL') || 
+                      connectionError.includes('IP') || 
+                      connectionError.includes('Handshake') || 
+                      connectionError.includes('timeout') || 
+                      connectionError.includes('ETIMEDOUT') ||
+                      connectionError.includes('tls') ||
+                      connectionError.includes('alert');
+
+    return (
+      <div className="pb-16 font-sans">
+        <div className="mb-8 pl-1">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">등록된 풀이</h1>
+          <p className="text-gray-500 font-medium">관리자 대시보드</p>
+        </div>
+
+        <div className="bg-white rounded-3xl p-8 lg:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-red-100 max-w-3xl">
+          <div className="flex items-start space-x-5">
+            <div className="bg-red-50 p-4 rounded-2xl text-red-500 shrink-0">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+            <div className="flex-1 space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">데이터베이스 연결 실패</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  MongoDB 데이터베이스에 접속할 수 없습니다. Vercel 서버의 IP 주소가 MongoDB Atlas 보안 설정(IP Access List)에 의해 차단되었을 확률이 매우 높습니다.
+                </p>
+              </div>
+
+              {isIpError && (
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 space-y-3">
+                  <h4 className="text-sm font-bold text-blue-900">💡 MongoDB Atlas IP 허용 설정 방법</h4>
+                  <ol className="list-decimal list-inside text-xs text-blue-800 space-y-2 leading-relaxed">
+                    <li><strong><a href="https://cloud.mongodb.com/" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-900">MongoDB Atlas 콘솔</a></strong>에 로그인합니다.</li>
+                    <li>좌측 메뉴에서 <strong>Security</strong> &rarr; <strong>Network Access</strong>를 선택합니다.</li>
+                    <li>우측의 <strong>Add IP Address</strong> 버튼을 클릭합니다.</li>
+                    <li><strong>Allow Access from Anywhere</strong> 버튼을 눌러 <code>0.0.0.0/0</code>을 등록합니다 (Vercel의 dynamic IP를 허용하기 위해 필수).</li>
+                    <li><strong>Confirm</strong>을 누르고 상태가 <strong>Active</strong>가 될 때까지 기다립니다 (약 1분 소요).</li>
+                  </ol>
+                </div>
+              )}
+
+              <div className="bg-gray-50 rounded-2xl p-4 font-mono text-xs text-gray-600 border border-gray-100 overflow-x-auto whitespace-pre-wrap max-w-full">
+                <strong>상세 에러 내용:</strong>{"\n"}{connectionError}
+              </div>
+
+              <div className="flex space-x-3 pt-2">
+                <Link 
+                  href="/admin"
+                  className="bg-gray-900 hover:bg-gray-800 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-all flex items-center"
+                >
+                  <RefreshCw className="w-4 h-4 mr-1.5" />
+                  다시 연결 시도 (새로고침)
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-16 font-sans">
@@ -22,6 +92,7 @@ export default async function AdminDashboard() {
           새 풀이 등록
         </Link>
       </div>
+
 
       <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-gray-100">
         {problems.length === 0 ? (

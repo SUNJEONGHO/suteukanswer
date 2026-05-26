@@ -17,10 +17,10 @@ export async function GET(request: Request) {
     const chapters = await collection.distinct('chapter', query);
 
     return NextResponse.json({ chapters });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/chapters:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: error.message || String(error) },
       { status: 500 }
     );
   }

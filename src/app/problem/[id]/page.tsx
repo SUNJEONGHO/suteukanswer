@@ -1,7 +1,7 @@
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,13 +12,55 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     notFound();
   }
 
-  const client = await clientPromise;
-  const db = client.db('math_platform');
-  const problem = await db.collection('problems').findOne({ _id: new ObjectId(id) });
+  let problem: any = null;
+  let connectionError = '';
+
+  try {
+    const client = await clientPromise;
+    const db = client.db('math_platform');
+    problem = await db.collection('problems').findOne({ _id: new ObjectId(id) });
+  } catch (error: any) {
+    console.error('Failed to fetch problem in ProblemPage:', error);
+    connectionError = error.message || String(error);
+  }
+
+  if (connectionError) {
+    return (
+      <div className="min-h-screen bg-[#F2F4F6] flex flex-col font-sans">
+        <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+          <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <Link href="/" className="flex items-center text-gray-500 hover:text-gray-900 transition-colors font-medium">
+              <ChevronLeft className="w-5 h-5 mr-1" />
+              <span>다른 문제 찾기</span>
+            </Link>
+          </div>
+        </header>
+
+        <main className="flex-1 w-full max-w-3xl mx-auto p-6 md:p-8 flex flex-col justify-center">
+          <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-red-100 flex flex-col items-center text-center space-y-4">
+            <div className="bg-red-50 p-4 rounded-full text-red-500">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">데이터베이스 연결 실패</h3>
+            <p className="text-gray-500 text-sm max-w-md leading-relaxed">
+              풀이를 불러오는 과정에서 데이터베이스에 접근하지 못했습니다. MongoDB Atlas의 IP Whitelist(네트워크 설정)에 Vercel 서버의 IP 주소가 등록되어 있는지 확인해주세요.
+            </p>
+            <div className="bg-gray-50 rounded-2xl p-4 font-mono text-xs text-gray-600 border border-gray-100 max-w-full overflow-x-auto text-left whitespace-pre-wrap w-full">
+              {connectionError}
+            </div>
+            <Link href="/" className="bg-[#3182F6] hover:bg-[#1b64da] text-white font-bold px-6 py-3 rounded-2xl text-sm transition-all">
+              메인으로 돌아가기
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!problem) {
     notFound();
   }
+
 
   return (
     <div className="min-h-screen bg-[#F2F4F6] flex flex-col font-sans">
