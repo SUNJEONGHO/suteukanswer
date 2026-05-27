@@ -1,31 +1,31 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { sql, initDb } from '@/lib/db';
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db('math_platform');
-    // Ping the database to verify active connection
-    await db.command({ ping: 1 });
+    await initDb();
+    // Verify query connection
+    const checkRes = await sql`SELECT 1 as connected`;
     
-    // Count documents in the problems collection
-    const count = await db.collection('problems').countDocuments();
+    // Count the problems in the postgres table
+    const countRes = await sql`SELECT COUNT(*) FROM problems`;
+    const count = Number(countRes.rows[0].count);
     
     return NextResponse.json({
       status: 'success',
-      message: 'Successfully connected to MongoDB',
+      message: 'Successfully connected to Vercel Postgres',
       problemsCount: count,
-      envUriExists: !!process.env.MONGODB_URI,
+      envUrlExists: !!process.env.POSTGRES_URL,
     });
   } catch (error: any) {
     console.error('Database connection test failed:', error);
     return NextResponse.json({
       status: 'error',
-      message: 'Failed to connect to MongoDB',
+      message: 'Failed to connect to Vercel Postgres',
       error: error.message || String(error),
-      envUriExists: !!process.env.MONGODB_URI,
-      envUriPreview: process.env.MONGODB_URI
-        ? `${process.env.MONGODB_URI.substring(0, 15)}...`
+      envUrlExists: !!process.env.POSTGRES_URL,
+      envUrlPreview: process.env.POSTGRES_URL
+        ? `${process.env.POSTGRES_URL.substring(0, 20)}...`
         : 'none',
     }, { status: 500 });
   }

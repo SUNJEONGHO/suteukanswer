@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-
-const dbName = 'math_platform';
-const collectionName = 'problems';
+import { sql, initDb } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
+    await initDb();
     const data = await request.json();
     const { id, subject, chapter, problemNumber, contentHtml, description } = data;
 
@@ -16,58 +14,56 @@ export async function POST(request: Request) {
       );
     }
 
-    const client = await clientPromise;
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-
     // If explicit ID is provided, update by ID (supports modifying key fields)
     if (id) {
-      const { ObjectId } = require('mongodb');
-      if (!ObjectId.isValid(id)) {
+      const parsedId = Number(id);
+      if (isNaN(parsedId)) {
         return NextResponse.json({ error: 'Invalid id format' }, { status: 400 });
       }
 
-      await collection.updateOne(
-        { _id: new ObjectId(id) },
-        {
-          $set: {
-            subject,
-            chapter,
-            problemNumber: Number(problemNumber),
-            description: description || '',
-            contentHtml,
-            updatedAt: new Date()
-          }
-        }
-      );
+      await sql`
+        UPDATE problems 
+        SET subject = ${subject}, 
+            chapter = ${chapter}, 
+            problem_number = ${Number(problemNumber)}, 
+            description = ${description || ''}, 
+            content_html = ${contentHtml}, 
+            updated_at = NOW() 
+        WHERE id = ${parsedId}
+      `;
       return NextResponse.json({ message: 'Problem updated successfully' }, { status: 200 });
     }
 
     // Check if problem already exists with same key fields
-    const existing = await collection.findOne({ subject, chapter, problemNumber: Number(problemNumber) });
-    if (existing) {
-       // Update description and contentHtml
-       await collection.updateOne(
-        { _id: existing._id },
-        { $set: { description: description || '', contentHtml, updatedAt: new Date() } }
-       );
-       return NextResponse.json({ message: 'Problem updated successfully' }, { status: 200 });
+    const existingResult = await sql`
+      SELECT id FROM problems 
+      WHERE subject = ${subject} 
+        AND chapter = ${chapter} 
+        AND problem_number = ${Number(problemNumber)}
+    `;
+
+    if (existingResult.rows.length > 0) {
+      const existingId = existingResult.rows[0].id;
+      // Update description and contentHtml
+      await sql`
+        UPDATE problems 
+        SET description = ${description || ''}, 
+            content_html = ${contentHtml}, 
+            updated_at = NOW() 
+        WHERE id = ${existingId}
+      `;
+      return NextResponse.json({ message: 'Problem updated successfully' }, { status: 200 });
     }
 
-    const newProblem = {
-      subject,
-      chapter,
-      problemNumber: Number(problemNumber),
-      description: description || '',
-      contentHtml,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    const result = await collection.insertOne(newProblem);
+    // Insert new problem
+    const insertResult = await sql`
+      INSERT INTO problems (subject, chapter, problem_number, description, content_html) 
+      VALUES (${subject}, ${chapter}, ${Number(problemNumber)}, ${description || ''}, ${contentHtml})
+      RETURNING id
+    `;
 
     return NextResponse.json(
-      { message: 'Problem created successfully', id: result.insertedId },
+      { message: 'Problem created successfully', id: insertResult.rows[0].id.toString() },
       { status: 201 }
     );
   } catch (error: any) {
@@ -81,29 +77,78 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
+    await initDb();
     const { searchParams } = new URL(request.url);
     const subject = searchParams.get('subject');
     const chapter = searchParams.get('chapter');
     const problemNumber = searchParams.get('problemNumber');
     const id = searchParams.get('id');
 
-    const client = await clientPromise;
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-
     if (id) {
-        const { ObjectId } = require('mongodb');
-        const problem = await collection.findOne({ _id: new ObjectId(id) });
-        if (!problem) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        return NextResponse.json(problem);
+      const parsedId = Number(id);
+      if (isNaN(parsedId)) {
+        return NextResponse.json({ error: 'Invalid id format' }, { status: 400 });
+      }
+
+      const result = await sql`SELECT * FROM problems WHERE id = ${parsedId}`;
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        _id: row.id.toString(),
+        id: row.id,
+        subject: row.subject,
+        chapter: row.chapter,
+        problemNumber: row.problem_number,
+        description: row.description,
+        contentHtml: row.content_html,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      });
     }
 
-    const query: any = {};
-    if (subject) query.subject = subject;
-    if (chapter) query.chapter = chapter;
-    if (problemNumber) query.problemNumber = Number(problemNumber);
+    let result;
+    if (subject && chapter && problemNumber) {
+      result = await sql`
+        SELECT * FROM problems 
+        WHERE subject = ${subject} 
+          AND chapter = ${chapter} 
+          AND problem_number = ${Number(problemNumber)} 
+        ORDER BY problem_number ASC
+      `;
+    } else if (subject && chapter) {
+      result = await sql`
+        SELECT * FROM problems 
+        WHERE subject = ${subject} 
+          AND chapter = ${chapter} 
+        ORDER BY problem_number ASC
+      `;
+    } else if (subject) {
+      result = await sql`
+        SELECT * FROM problems 
+        WHERE subject = ${subject} 
+        ORDER BY problem_number ASC
+      `;
+    } else {
+      result = await sql`
+        SELECT * FROM problems 
+        ORDER BY subject ASC, chapter ASC, problem_number ASC
+      `;
+    }
 
-    const problems = await collection.find(query).sort({ problemNumber: 1 }).toArray();
+    const problems = result.rows.map(row => ({
+      _id: row.id.toString(),
+      id: row.id,
+      subject: row.subject,
+      chapter: row.chapter,
+      problemNumber: row.problem_number,
+      description: row.description,
+      contentHtml: row.content_html,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    }));
 
     return NextResponse.json({ problems });
   } catch (error: any) {
@@ -117,6 +162,7 @@ export async function GET(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    await initDb();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -124,18 +170,18 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }
 
-    const { ObjectId } = require('mongodb');
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    const parsedId = Number(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json({ error: 'Invalid id format' }, { status: 400 });
     }
 
-    const client = await clientPromise;
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const result = await sql`
+      DELETE FROM problems 
+      WHERE id = ${parsedId}
+    `;
 
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
+    // Note: pg doesn't return deletedCount directly, but rowCount tells how many rows were affected
+    if (result.rowCount === 0) {
       return NextResponse.json({ error: 'Problem not found' }, { status: 404 });
     }
 

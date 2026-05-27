@@ -1,5 +1,4 @@
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import { sql, initDb } from '@/lib/db';
 import Link from 'next/link';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -8,7 +7,8 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
   const resolvedParams = await params;
   const id = resolvedParams.id;
   
-  if (!ObjectId.isValid(id)) {
+  const parsedId = Number(id);
+  if (isNaN(parsedId)) {
     notFound();
   }
 
@@ -16,9 +16,22 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
   let connectionError = '';
 
   try {
-    const client = await clientPromise;
-    const db = client.db('math_platform');
-    problem = await db.collection('problems').findOne({ _id: new ObjectId(id) });
+    await initDb();
+    const result = await sql`SELECT * FROM problems WHERE id = ${parsedId}`;
+    if (result.rows.length > 0) {
+      const row = result.rows[0];
+      problem = {
+        _id: row.id.toString(),
+        id: row.id,
+        subject: row.subject,
+        chapter: row.chapter,
+        problemNumber: row.problem_number,
+        description: row.description,
+        contentHtml: row.content_html,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      };
+    }
   } catch (error: any) {
     console.error('Failed to fetch problem in ProblemPage:', error);
     connectionError = error.message || String(error);
@@ -43,7 +56,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
             </div>
             <h3 className="text-xl font-bold text-gray-900">데이터베이스 연결 실패</h3>
             <p className="text-gray-500 text-sm max-w-md leading-relaxed">
-              풀이를 불러오는 과정에서 데이터베이스에 접근하지 못했습니다. MongoDB Atlas의 IP Whitelist(네트워크 설정)에 Vercel 서버의 IP 주소가 등록되어 있는지 확인해주세요.
+              풀이를 불러오는 과정에서 Vercel Postgres 데이터베이스에 접속할 수 없었습니다. Vercel 프로젝트의 Storage 탭에서 데이터베이스가 정상적으로 생성 및 연결되어 있는지 확인해 주세요.
             </p>
             <div className="bg-gray-50 rounded-2xl p-4 font-mono text-xs text-gray-600 border border-gray-100 max-w-full overflow-x-auto text-left whitespace-pre-wrap w-full">
               {connectionError}
@@ -60,7 +73,6 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
   if (!problem) {
     notFound();
   }
-
 
   return (
     <div className="min-h-screen bg-[#F2F4F6] flex flex-col font-sans">

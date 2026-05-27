@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-
-const dbName = 'math_platform';
-const collectionName = 'problems';
+import { sql, initDb } from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
+    await initDb();
     const { searchParams } = new URL(request.url);
     const subject = searchParams.get('subject');
 
-    const client = await clientPromise;
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    let result;
+    if (subject) {
+      result = await sql`
+        SELECT DISTINCT chapter FROM problems 
+        WHERE subject = ${subject}
+        ORDER BY chapter ASC
+      `;
+    } else {
+      result = await sql`
+        SELECT DISTINCT chapter FROM problems 
+        ORDER BY chapter ASC
+      `;
+    }
 
-    const query = subject ? { subject } : {};
-    const chapters = await collection.distinct('chapter', query);
+    const chapters = result.rows.map(row => row.chapter);
 
     return NextResponse.json({ chapters });
   } catch (error: any) {
