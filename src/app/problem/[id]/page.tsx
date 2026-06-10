@@ -111,7 +111,41 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
             execute properly without breaking the Next.js parent application layout.
           */}
           <iframe 
-            srcDoc={problem.contentHtml ? problem.contentHtml.replace(/<img[^>]*>/gi, '') : ''}
+            srcDoc={problem.contentHtml ? problem.contentHtml.replace(/<img[^>]*>/gi, '') + `
+<style>
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.body.dataset.layoutInjected) return;
+    document.body.dataset.layoutInjected = 'true';
+    const textContainer = document.createElement('div');
+    textContainer.style.cssText = 'flex: 1; overflow-y: auto; padding-right: 24px; font-size: 16px; line-height: 1.7; display: flex; flex-direction: column; gap: 8px; height: 100%;';
+    const graphContainer = document.createElement('div');
+    graphContainer.style.cssText = 'flex: 1.2; height: 100%; display: flex; flex-direction: column;';
+    const graphEl = document.querySelector('iframe, #calculator, [id*="desmos"]');
+    const children = Array.from(document.body.childNodes);
+    children.forEach(child => {
+      if (child.nodeName === 'SCRIPT' || child.nodeName === 'STYLE') return;
+      if (child === graphEl || (graphEl && graphEl.contains(child))) {
+        graphContainer.appendChild(child);
+      } else {
+        textContainer.appendChild(child);
+      }
+    });
+    document.body.style.cssText = 'display: flex; flex-direction: row; height: 100vh; margin: 0; padding: 24px; box-sizing: border-box; overflow: hidden; background: transparent;';
+    document.body.appendChild(textContainer);
+    if(graphEl) {
+      document.body.appendChild(graphContainer);
+      graphEl.style.cssText = 'width: 100%; height: 100%; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1;';
+    } else {
+      textContainer.style.paddingRight = '0';
+    }
+  });
+</script>` : ''}
             className="w-full h-full flex-1 border-0"
             title={`Problem ${problem.problemNumber} Solution`}
             sandbox="allow-scripts allow-same-origin"
