@@ -245,7 +245,7 @@ function UploadForm() {
             <div className="flex-1 p-0 relative bg-[#F9FAFB] dark:bg-gray-900 transition-colors">
               {contentHtml ? (
                 <iframe
-                  srcDoc={contentHtml}
+                  srcDoc={`${contentHtml}<style>img { display: none !important; }</style>`}
                   className="absolute inset-0 w-full h-full border-0 bg-white dark:bg-gray-200"
                   title="Live Preview"
                   sandbox="allow-scripts allow-same-origin"

@@ -111,7 +111,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
             execute properly without breaking the Next.js parent application layout.
           */}
           <iframe 
-            srcDoc={problem.contentHtml}
+            srcDoc={`${problem.contentHtml}<style>img { display: none !important; }</style>`}
             className="w-full h-full flex-1 border-0"
             title={`Problem ${problem.problemNumber} Solution`}
             sandbox="allow-scripts allow-same-origin"
