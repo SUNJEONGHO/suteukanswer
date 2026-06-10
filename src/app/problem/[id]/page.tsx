@@ -123,6 +123,14 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     if (document.body.dataset.layoutInjected) return;
     document.body.dataset.layoutInjected = 'true';
     
+    // 1. If the AI already provided a side-by-side layout (e.g., left-panel and right-panel), DO NOT break it!
+    if (document.querySelector('.left-panel') || document.querySelector('.right-panel') || document.querySelector('.main-container')) {
+      document.body.style.height = '100vh';
+      document.body.style.margin = '0';
+      return; 
+    }
+    
+    // 2. Fallback: Force side-by-side for flat top-to-bottom documents (like simple Desmos embeds)
     const textContainer = document.createElement('div');
     textContainer.style.cssText = 'flex: 1; overflow-y: auto; padding-right: 24px; font-size: 16px; line-height: 1.7;';
     
@@ -135,11 +143,19 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     }
     
     // Find graph inside textContainer and pull it out
-    const graphEl = textContainer.querySelector('iframe, #calculator, [class*="desmos"]');
+    const graphEl = textContainer.querySelector('iframe, #calculator, [class*="desmos"], canvas');
     if (graphEl) {
-      graphEl.parentNode.removeChild(graphEl);
-      graphContainer.appendChild(graphEl);
-      graphEl.style.cssText = 'width: 100%; height: 100%; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1;';
+      // Find a suitable wrapper so we don't leave controls behind
+      let targetToMove = graphEl;
+      if (graphEl.parentElement !== textContainer && graphEl.parentElement.tagName === 'DIV') {
+         targetToMove = graphEl.parentElement;
+      }
+      targetToMove.parentNode.removeChild(targetToMove);
+      graphContainer.appendChild(targetToMove);
+      
+      if (graphEl.tagName !== 'CANVAS') {
+        graphEl.style.cssText = 'width: 100%; height: 100%; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1;';
+      }
     }
     
     // Setup body as flex row
