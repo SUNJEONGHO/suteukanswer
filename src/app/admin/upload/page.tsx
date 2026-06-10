@@ -252,18 +252,44 @@ function UploadForm() {
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   
-  /* AI-generated templates often stack at <1024px. Override this to force side-by-side in the iframe! */
-  @media (max-width: 3000px) {
-    .container, .main-container {
+  /* Desktop: Force side-by-side (override AI's 1024px limit) */
+  @media (min-width: 768px) {
+    .container, .main-container, body.fallback-injected {
       flex-direction: row !important;
       display: flex !important;
     }
-    .left-panel, .right-panel {
+    .left-panel, .right-panel, .fallback-text, .fallback-graph {
       height: 100vh !important;
       overflow-y: auto !important;
     }
     body, html {
       overflow: hidden !important;
+      height: 100vh !important;
+    }
+  }
+
+  /* Mobile: Stack vertically with proper scrolling */
+  @media (max-width: 767px) {
+    .container, .main-container, body.fallback-injected {
+      flex-direction: column !important;
+      display: flex !important;
+      height: auto !important;
+    }
+    .left-panel, .fallback-text {
+      flex: none !important;
+      height: auto !important;
+      overflow-y: visible !important;
+      padding-bottom: 20px !important;
+    }
+    .right-panel, .fallback-graph {
+      flex: none !important;
+      height: 500px !important;
+      min-height: 500px !important;
+      width: 100% !important;
+    }
+    body, html {
+      overflow-y: auto !important;
+      height: auto !important;
     }
   }
 </style>
@@ -272,19 +298,19 @@ function UploadForm() {
     if (document.body.dataset.layoutInjected) return;
     document.body.dataset.layoutInjected = 'true';
     
-    // 1. If the AI already provided a side-by-side layout, DO NOT break it!
     if (document.querySelector('.left-panel') || document.querySelector('.right-panel') || document.querySelector('.main-container') || document.querySelector('.container')) {
-      document.body.style.height = '100vh';
-      document.body.style.margin = '0';
       return; 
     }
     
-    // 2. Fallback: Force side-by-side for flat top-to-bottom documents
+    document.body.classList.add('fallback-injected');
+    
     const textContainer = document.createElement('div');
-    textContainer.style.cssText = 'flex: 1; overflow-y: auto; padding-right: 24px; font-size: 16px; line-height: 1.7;';
+    textContainer.className = 'fallback-text';
+    textContainer.style.cssText = 'flex: 1; padding-right: 24px; font-size: 16px; line-height: 1.7;';
     
     const graphContainer = document.createElement('div');
-    graphContainer.style.cssText = 'flex: 1.2; height: 100%; display: flex; flex-direction: column;';
+    graphContainer.className = 'fallback-graph';
+    graphContainer.style.cssText = 'flex: 1.2; display: flex; flex-direction: column;';
     
     while(document.body.firstChild) {
       textContainer.appendChild(document.body.firstChild);
@@ -300,11 +326,11 @@ function UploadForm() {
       graphContainer.appendChild(targetToMove);
       
       if (graphEl.tagName !== 'CANVAS') {
-        graphEl.style.cssText = 'width: 100%; height: 100%; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1;';
+        graphEl.style.cssText = 'width: 100%; height: 100%; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex: 1; min-height: 400px;';
       }
     }
     
-    document.body.style.cssText = 'display: flex; flex-direction: row; height: 100vh; margin: 0; padding: 24px; box-sizing: border-box; overflow: hidden; background: transparent;';
+    document.body.style.cssText = 'margin: 0; padding: 24px; box-sizing: border-box; background: transparent;';
     
     document.body.appendChild(textContainer);
     if (graphEl) {
