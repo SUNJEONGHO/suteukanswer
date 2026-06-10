@@ -117,35 +117,47 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  
+  /* AI-generated templates often stack at <1024px. Override this to force side-by-side in the iframe! */
+  @media (max-width: 3000px) {
+    .container, .main-container {
+      flex-direction: row !important;
+      display: flex !important;
+    }
+    .left-panel, .right-panel {
+      height: 100vh !important;
+      overflow-y: auto !important;
+    }
+    body, html {
+      overflow: hidden !important;
+    }
+  }
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     if (document.body.dataset.layoutInjected) return;
     document.body.dataset.layoutInjected = 'true';
     
-    // 1. If the AI already provided a side-by-side layout (e.g., left-panel and right-panel), DO NOT break it!
-    if (document.querySelector('.left-panel') || document.querySelector('.right-panel') || document.querySelector('.main-container')) {
+    // 1. If the AI already provided a side-by-side layout, DO NOT break it!
+    if (document.querySelector('.left-panel') || document.querySelector('.right-panel') || document.querySelector('.main-container') || document.querySelector('.container')) {
       document.body.style.height = '100vh';
       document.body.style.margin = '0';
       return; 
     }
     
-    // 2. Fallback: Force side-by-side for flat top-to-bottom documents (like simple Desmos embeds)
+    // 2. Fallback: Force side-by-side for flat top-to-bottom documents
     const textContainer = document.createElement('div');
     textContainer.style.cssText = 'flex: 1; overflow-y: auto; padding-right: 24px; font-size: 16px; line-height: 1.7;';
     
     const graphContainer = document.createElement('div');
     graphContainer.style.cssText = 'flex: 1.2; height: 100%; display: flex; flex-direction: column;';
     
-    // Move everything into text container
     while(document.body.firstChild) {
       textContainer.appendChild(document.body.firstChild);
     }
     
-    // Find graph inside textContainer and pull it out
     const graphEl = textContainer.querySelector('iframe, #calculator, [class*="desmos"], canvas');
     if (graphEl) {
-      // Find a suitable wrapper so we don't leave controls behind
       let targetToMove = graphEl;
       if (graphEl.parentElement !== textContainer && graphEl.parentElement.tagName === 'DIV') {
          targetToMove = graphEl.parentElement;
@@ -158,7 +170,6 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
       }
     }
     
-    // Setup body as flex row
     document.body.style.cssText = 'display: flex; flex-direction: row; height: 100vh; margin: 0; padding: 24px; box-sizing: border-box; overflow: hidden; background: transparent;';
     
     document.body.appendChild(textContainer);
