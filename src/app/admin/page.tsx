@@ -1,7 +1,8 @@
 import { sql, initDb } from '@/lib/db';
 import Link from 'next/link';
-import { FileText, ExternalLink, Plus, Edit, AlertCircle, RefreshCw } from 'lucide-react';
+import { FileText, ExternalLink, Plus, Edit, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,7 @@ export default async function AdminDashboard() {
       chapter: row.chapter,
       problemNumber: row.problem_number,
       description: row.description,
+      views: row.views || 0,
       createdAt: row.created_at,
       updatedAt: row.updated_at
     }));
@@ -83,11 +85,14 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="pb-16 font-sans">
-      <div className="flex items-end justify-between mb-8 pl-1">
+    <div className="min-h-screen pb-16 font-sans bg-[#F2F4F6] dark:bg-gray-900 transition-colors p-6">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <div className="flex items-end justify-between mb-8 pl-1 max-w-7xl mx-auto pt-10">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">등록된 풀이</h1>
-          <p className="text-gray-500 font-medium">총 {problems.length}개의 해설이 서비스 중입니다.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">등록된 풀이</h1>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">총 {problems.length}개의 해설이 서비스 중입니다.</p>
         </div>
         <Link href="/admin/upload" className="bg-[#3182F6] hover:bg-[#1b64da] active:bg-[#1a5bc2] text-white px-5 py-3 rounded-2xl font-semibold shadow-sm transition-all flex items-center">
           <Plus className="w-5 h-5 mr-1.5" />
@@ -95,7 +100,7 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-gray-100">
+      <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-gray-100 dark:border-gray-700 transition-colors">
         {problems.length === 0 ? (
           <div className="py-24 text-center">
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -108,42 +113,49 @@ export default async function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500 font-semibold text-[13px] uppercase tracking-wider">
+                <tr className="bg-gray-50/50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold text-[13px] uppercase tracking-wider">
                   <th className="px-8 py-5 whitespace-nowrap">과목</th>
                   <th className="px-8 py-5 whitespace-nowrap">단원</th>
                   <th className="px-8 py-5 whitespace-nowrap">문제 번호</th>
                   <th className="px-8 py-5 whitespace-nowrap">문제 설명</th>
+                  <th className="px-8 py-5 whitespace-nowrap">조회수</th>
                   <th className="px-8 py-5 whitespace-nowrap">등록일</th>
                   <th className="px-8 py-5 whitespace-nowrap">수정일</th>
                   <th className="px-8 py-5 text-right whitespace-nowrap">관리</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {problems.map((p) => (
-                  <tr key={p._id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="px-8 py-5 font-semibold text-gray-900 whitespace-nowrap">{p.subject}</td>
-                    <td className="px-8 py-5 text-gray-600 font-medium whitespace-nowrap">{p.chapter}</td>
+                  <tr key={p._id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors group">
+                    <td className="px-8 py-5 font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">{p.subject}</td>
+                    <td className="px-8 py-5 text-gray-600 dark:text-gray-300 font-medium whitespace-nowrap">{p.chapter}</td>
                     <td className="px-8 py-5 whitespace-nowrap">
-                      <span className="bg-[#F2F4F6] text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+                      <span className="bg-[#F2F4F6] dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-full text-sm font-semibold">
                         {p.problemNumber}번
                       </span>
                     </td>
-                    <td className="px-8 py-5 text-gray-500 font-medium max-w-[200px] truncate whitespace-nowrap" title={p.description}>
+                    <td className="px-8 py-5 text-gray-500 dark:text-gray-400 font-medium max-w-[200px] truncate whitespace-nowrap" title={p.description}>
                       {p.description || '-'}
                     </td>
-                    <td className="px-8 py-5 text-gray-400 text-sm font-medium whitespace-nowrap">
+                    <td className="px-8 py-5 whitespace-nowrap">
+                      <span className="inline-flex items-center text-gray-500 dark:text-gray-400 font-medium text-sm">
+                        <Eye className="w-4 h-4 mr-1" />
+                        {p.views}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5 text-gray-400 dark:text-gray-500 text-sm font-medium whitespace-nowrap">
                       {new Date(p.createdAt).getMonth() + 1}/{new Date(p.createdAt).getDate()}
                     </td>
-                    <td className="px-8 py-5 text-gray-400 text-sm font-medium whitespace-nowrap">
+                    <td className="px-8 py-5 text-gray-400 dark:text-gray-500 text-sm font-medium whitespace-nowrap">
                       {p.updatedAt ? `${new Date(p.updatedAt).getMonth() + 1}/${new Date(p.updatedAt).getDate()}` : '-'}
                     </td>
                     <td className="px-8 py-5 text-right whitespace-nowrap">
                       <div className="inline-flex items-center space-x-2">
-                        <Link href={`/problem/${p._id}`} target="_blank" className="inline-flex items-center justify-center bg-[#E8F3FF] text-[#3182F6] hover:bg-[#d3e8ff] px-4 py-2 rounded-xl font-semibold text-[13px] transition-colors">
+                        <Link href={`/problem/${p._id}`} target="_blank" className="inline-flex items-center justify-center bg-[#E8F3FF] dark:bg-[#3182F6]/20 text-[#3182F6] dark:text-[#60a5fa] hover:bg-[#d3e8ff] dark:hover:bg-[#3182F6]/30 px-4 py-2 rounded-xl font-semibold text-[13px] transition-colors">
                           상세 보기
                           <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
                         </Link>
-                        <Link href={`/admin/upload?id=${p._id}`} className="inline-flex items-center justify-center bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-xl font-semibold text-[13px] transition-colors">
+                        <Link href={`/admin/upload?id=${p._id}`} className="inline-flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-xl font-semibold text-[13px] transition-colors">
                           수정
                           <Edit className="w-3.5 h-3.5 ml-1.5" />
                         </Link>

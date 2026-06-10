@@ -104,13 +104,38 @@ export async function GET(request: Request) {
         problemNumber: row.problem_number,
         description: row.description,
         contentHtml: row.content_html,
+        views: row.views || 0,
         createdAt: row.created_at,
         updatedAt: row.updated_at
       });
     }
 
     let result;
-    if (subject && chapter && problemNumber) {
+    const search = searchParams.get('search');
+    
+    if (search) {
+      const searchPattern = `%${search}%`;
+      // Search across description, subject, and chapter, or if it's a number, match problem_number
+      const searchNum = Number(search);
+      if (!isNaN(searchNum)) {
+        result = await sql`
+          SELECT * FROM problems 
+          WHERE subject ILIKE ${searchPattern} 
+             OR chapter ILIKE ${searchPattern} 
+             OR description ILIKE ${searchPattern}
+             OR problem_number = ${searchNum}
+          ORDER BY problem_number ASC
+        `;
+      } else {
+        result = await sql`
+          SELECT * FROM problems 
+          WHERE subject ILIKE ${searchPattern} 
+             OR chapter ILIKE ${searchPattern} 
+             OR description ILIKE ${searchPattern}
+          ORDER BY subject ASC, chapter ASC, problem_number ASC
+        `;
+      }
+    } else if (subject && chapter && problemNumber) {
       result = await sql`
         SELECT * FROM problems 
         WHERE subject = ${subject} 
@@ -146,6 +171,7 @@ export async function GET(request: Request) {
       problemNumber: row.problem_number,
       description: row.description,
       contentHtml: row.content_html,
+      views: row.views || 0,
       createdAt: row.created_at,
       updatedAt: row.updated_at
     }));

@@ -111,21 +111,21 @@ function UploadForm() {
   const chapters = SUBJECT_CHAPTERS[subject] || [];
 
   return (
-    <div className="font-sans text-gray-900 pb-16">
+    <div className="font-sans text-gray-900 dark:text-gray-100 pb-16 transition-colors p-6 max-w-7xl mx-auto pt-10">
       <div className="mb-8 pl-1">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">
           {id ? '풀이 수정' : '풀이 등록'}
         </h1>
-        <p className="text-gray-500 font-medium">
+        <p className="text-gray-500 dark:text-gray-400 font-medium">
           수능특강 문제의 상세 정보와 해설 HTML 코드를 입력해주세요.
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-colors border border-gray-100 dark:border-gray-700">
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Form Section */}
-          <div className="p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-gray-100 flex flex-col h-full">
-            <h2 className="text-xl font-bold flex items-center mb-6 text-gray-800 tracking-tight">
+          <div className="p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-gray-700 flex flex-col h-full">
+            <h2 className="text-xl font-bold flex items-center mb-6 text-gray-800 dark:text-gray-100 tracking-tight">
               <Code className="w-6 h-6 mr-2 text-[#3182F6]" />
               에디터
             </h2>
@@ -136,12 +136,12 @@ function UploadForm() {
               <div className="grid grid-cols-2 gap-5">
                 {/* Subject Select */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 pl-1">과목</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-1">과목</label>
                   <div className="relative">
                     <select
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
-                      className="w-full bg-[#F9FAFB] border border-transparent rounded-2xl px-5 py-4 appearance-none focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] focus:bg-white transition-all text-base font-medium text-gray-900"
+                      className="w-full bg-[#F9FAFB] dark:bg-gray-700 border border-transparent rounded-2xl px-5 py-4 appearance-none focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] dark:focus:bg-gray-700 transition-all text-base font-medium text-gray-900 dark:text-white"
                     >
                       {SUBJECTS.map((s) => (
                         <option key={s} value={s}>{s}</option>
@@ -155,7 +155,7 @@ function UploadForm() {
 
                 {/* Chapter Autocomplete Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 pl-1">단원</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-1">단원</label>
                   <div className="relative">
                     <input
                       type="text"
@@ -163,7 +163,7 @@ function UploadForm() {
                       value={chapter}
                       onChange={(e) => setChapter(e.target.value)}
                       placeholder="예: 01 지수와 로그"
-                      className="w-full bg-[#F9FAFB] border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] focus:bg-white transition-all text-base font-medium text-gray-900 placeholder:text-gray-400"
+                      className="w-full bg-[#F9FAFB] dark:bg-gray-700 border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] dark:focus:bg-gray-700 transition-all text-base font-medium text-gray-900 dark:text-white placeholder:text-gray-400"
                     />
                     <datalist id="existing-chapters">
                       {chapters.map((c) => (
@@ -177,7 +177,7 @@ function UploadForm() {
               <div className="grid grid-cols-2 gap-5">
                 {/* Problem Number Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 pl-1">문제 번호</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-1">문제 번호</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -185,21 +185,21 @@ function UploadForm() {
                       value={problemNumber}
                       onChange={(e) => setProblemNumber(e.target.value)}
                       placeholder="숫자 입력"
-                      className="w-full bg-[#F9FAFB] border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] focus:bg-white transition-all text-base font-medium text-gray-900 placeholder:text-gray-400"
+                      className="w-full bg-[#F9FAFB] dark:bg-gray-700 border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] dark:focus:bg-gray-700 transition-all text-base font-medium text-gray-900 dark:text-white placeholder:text-gray-400"
                     />
                   </div>
                 </div>
 
                 {/* Description Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 pl-1">문제 설명 (한 줄 요약)</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-1">문제 설명 (한 줄 요약)</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="예: 지수법칙을 이용한 계산"
-                      className="w-full bg-[#F9FAFB] border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] focus:bg-white transition-all text-base font-medium text-gray-900 placeholder:text-gray-400"
+                      className="w-full bg-[#F9FAFB] dark:bg-gray-700 border border-transparent rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] dark:focus:bg-gray-700 transition-all text-base font-medium text-gray-900 dark:text-white placeholder:text-gray-400"
                     />
                   </div>
                 </div>
@@ -207,12 +207,12 @@ function UploadForm() {
 
               {/* HTML Editor */}
               <div className="space-y-2 flex-1 flex flex-col">
-                <label className="text-sm font-semibold text-gray-700 pl-1">HTML 풀이 코드</label>
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-1">HTML 풀이 코드</label>
                 <textarea
                   value={contentHtml}
                   onChange={(e) => setContentHtml(e.target.value)}
                   placeholder="<!DOCTYPE html><html>...</html>"
-                  className="w-full flex-1 min-h-[300px] font-mono text-[13px] leading-relaxed border border-gray-200 rounded-2xl p-5 focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] outline-none transition-all resize-none bg-white shadow-sm"
+                  className="w-full flex-1 min-h-[300px] font-mono text-[13px] leading-relaxed border border-gray-200 dark:border-gray-600 rounded-2xl p-5 focus:ring-4 focus:ring-[#3182F6]/20 focus:border-[#3182F6] outline-none transition-all resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm"
                 ></textarea>
               </div>
 
@@ -237,23 +237,23 @@ function UploadForm() {
           </div>
 
           {/* Preview Section */}
-          <div className="bg-[#F9FAFB] flex flex-col h-[800px] lg:h-auto">
-            <div className="p-6 lg:p-10 border-b border-gray-100 bg-white flex items-center shadow-sm z-10">
+          <div className="bg-[#F9FAFB] dark:bg-gray-800 flex flex-col h-[800px] lg:h-auto">
+            <div className="p-6 lg:p-10 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center shadow-sm z-10 transition-colors">
               <Eye className="w-6 h-6 mr-2 text-[#3182F6]" />
-              <h2 className="text-xl font-bold text-gray-800 tracking-tight">미리보기</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">미리보기</h2>
             </div>
-            <div className="flex-1 p-0 relative bg-[#F9FAFB]">
+            <div className="flex-1 p-0 relative bg-[#F9FAFB] dark:bg-gray-900 transition-colors">
               {contentHtml ? (
                 <iframe
                   srcDoc={contentHtml}
-                  className="absolute inset-0 w-full h-full border-0 bg-white"
+                  className="absolute inset-0 w-full h-full border-0 bg-white dark:bg-gray-200"
                   title="Live Preview"
                   sandbox="allow-scripts allow-same-origin"
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <Code className="w-8 h-8 text-gray-300" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                    <Code className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                   </div>
                   <p className="font-medium text-[15px]">HTML 코드를 입력하거나 이미지를 업로드해 보세요</p>
                 </div>

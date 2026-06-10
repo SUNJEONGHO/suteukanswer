@@ -14,10 +14,16 @@ export async function initDb() {
         problem_number INTEGER NOT NULL,
         description TEXT DEFAULT '',
         content_html TEXT NOT NULL,
+        views INTEGER DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT unique_subject_chapter_number UNIQUE (subject, chapter, problem_number)
       );
+    `;
+    
+    // Add views column if it doesn't exist (for existing tables)
+    await sql`
+      ALTER TABLE problems ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
     `;
     isInitialized = true;
     console.log('Database initialized: "problems" table ready.');
