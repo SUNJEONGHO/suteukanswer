@@ -114,6 +114,7 @@ export default async function AdminDashboard() {
                   <th className="px-8 py-5 whitespace-nowrap">문제 번호</th>
                   <th className="px-8 py-5 whitespace-nowrap">문제 설명</th>
                   <th className="px-8 py-5 whitespace-nowrap">등록일</th>
+                  <th className="px-8 py-5 whitespace-nowrap">수정일</th>
                   <th className="px-8 py-5 text-right whitespace-nowrap">관리</th>
                 </tr>
               </thead>
@@ -131,9 +132,10 @@ export default async function AdminDashboard() {
                       {p.description || '-'}
                     </td>
                     <td className="px-8 py-5 text-gray-400 text-sm font-medium whitespace-nowrap">
-                      {new Date(p.createdAt).toLocaleDateString('ko-KR', {
-                        year: 'numeric', month: 'long', day: 'numeric'
-                      })}
+                      {new Date(p.createdAt).getMonth() + 1}/{new Date(p.createdAt).getDate()}
+                    </td>
+                    <td className="px-8 py-5 text-gray-400 text-sm font-medium whitespace-nowrap">
+                      {p.updatedAt ? `${new Date(p.updatedAt).getMonth() + 1}/${new Date(p.updatedAt).getDate()}` : '-'}
                     </td>
                     <td className="px-8 py-5 text-right whitespace-nowrap">
                       <div className="inline-flex items-center space-x-2">

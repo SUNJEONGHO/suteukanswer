@@ -20,6 +20,8 @@ function UploadForm() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+
+
   // 수정 모드일 때 기존 데이터 불러오기
   useEffect(() => {
     if (!id) return;
@@ -43,8 +45,26 @@ function UploadForm() {
       }
     };
 
+    const list = SUBJECT_CHAPTERS[subject] || [];
+    if (list.length > 0 && !chapter) {
+      setChapter(list[0]);
+    }
+
     fetchProblem();
   }, [id]);
+
+  // 과목 선택 변경 시 해당 과목의 첫 단원을 기본값으로 제안
+  useEffect(() => {
+    if (id) return; // 수정 모드일 때는 덮어쓰지 않음
+    const list = SUBJECT_CHAPTERS[subject] || [];
+    if (list.length > 0) {
+      setChapter(list[0]);
+    } else {
+      setChapter('');
+    }
+  }, [subject, id]);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +82,7 @@ function UploadForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id, // 수정 모드 시 ID 전달
+          id,
           subject,
           chapter,
           problemNumber: Number(problemNumber),
@@ -105,10 +125,13 @@ function UploadForm() {
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Form Section */}
           <div className="p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-gray-100 flex flex-col h-full">
-            <h2 className="text-xl font-bold flex items-center mb-8 text-gray-800 tracking-tight">
+            <h2 className="text-xl font-bold flex items-center mb-6 text-gray-800 tracking-tight">
               <Code className="w-6 h-6 mr-2 text-[#3182F6]" />
               에디터
             </h2>
+
+
+
             <form onSubmit={handleSubmit} className="space-y-7 flex-1 flex flex-col">
               <div className="grid grid-cols-2 gap-5">
                 {/* Subject Select */}
@@ -232,7 +255,7 @@ function UploadForm() {
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <Code className="w-8 h-8 text-gray-300" />
                   </div>
-                  <p className="font-medium text-[15px]">HTML 코드를 입력하면 이곳에 나타납니다</p>
+                  <p className="font-medium text-[15px]">HTML 코드를 입력하거나 이미지를 업로드해 보세요</p>
                 </div>
               )}
             </div>

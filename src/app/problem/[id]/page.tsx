@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
