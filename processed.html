@@ -17,7 +17,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수능특강 수학I - 수열 단원 심화 해설</title>
+    <title>수능특강 수학 상호작용 해설</title>
+    
     <script>
         MathJax = {
             tex: {
@@ -25,793 +26,452 @@
                 displayMath: [['\\[', '\\]']],
                 processEscapes: true
             },
-            options: {
-                ignoreHtmlClass: 'tex2jax_ignore',
-                processHtmlClass: 'tex2jax_process'
+            svg: {
+                fontCache: 'global'
             }
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #eeebff;
-            --secondary: #0ea5e9;
-            --accent: #f43f5e;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --border: #e2e8f0;
-            --success: #10b981;
+            --primary-color: #339af0;
+            --secondary-color: #ff8787;
+            --bg-color: #f8f9fa;
+            --text-color: #343a40;
+            --border-color: #dee2e6;
+            --highlight-color: #2b8a3e;
+            --accent-color: #845ef7;
         }
-        
-        body {
+
+        body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-            background-color: #f1f5f9;
-            color: var(--dark);
-            display: flex;
-            flex-direction: column;
+            width: 100%;
             height: 100vh;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             overflow: hidden;
         }
 
-        /* Top Navigation Bar */
-        header {
-            background-color: white;
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
+        .container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            flex-shrink: 0;
-        }
-
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo span {
-            background: var(--primary);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
+            width: 100%;
             height: 100%;
-            align-items: center;
         }
 
-        .tab-btn {
-            padding: 0.5rem 1.2rem;
-            border: 1px solid transparent;
-            background: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #64748b;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn:hover {
-            background-color: var(--light);
-            color: var(--dark);
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
-            border-color: transparent;
-        }
-
-        /* Main Content Layout */
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
+        /* Left Panel: Explanation */
         .left-panel {
-            flex: 1.2;
-            background-color: white;
-            padding: 2rem;
-            overflow-y: auto;
-            border-right: 1px solid var(--border);
-        }
-
-        .right-panel {
             flex: 1;
-            background-color: #f8fafc;
-            padding: 2rem;
+            padding: 30px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            border-right: 1px solid var(--border-color);
+            background-color: #ffffff;
+            box-sizing: border-box;
         }
 
-        /* Content Typography & Elements */
-        .problem-card {
-            background-color: var(--light);
-            border: 1px solid var(--border);
+        .problem-desc {
+            max-width: 100%;
+            height: auto;
             border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .problem-tag {
-            display: inline-block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
-        }
-
-        .problem-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            line-height: 1.6;
-            margin: 0 0 1rem 0;
-        }
-
-        .problem-box {
-            background-color: white;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            color: var(--dark);
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .step {
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-        }
-
-        .step-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .step-title ::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 16px;
-            background-color: var(--primary);
-            border-radius: 2px;
-        }
-
-        .math-block {
-            background-color: var(--light);
-            border-left: 4px solid var(--primary);
-            padding: 1rem;
-            border-radius: 0 8px 8px 0;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-
-        .highlight {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* Interactive Dashboard Elements */
-        .dashboard-card {
-            background-color: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        .dashboard-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        canvas {
-            width: 100%;
-            height: 280px;
-            background-color: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        .control-group {
-            margin-top: 1rem;
-        }
-
-        .control-label {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .slider {
-            width: 100%;
-            -webkit-appearance: none;
-            height: 6px;
-            border-radius: 3px;
-            background: #e2e8f0;
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .solutions-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .sol-chip {
-            background-color: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.5rem;
-            text-align: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .sol-chip:hover {
-            border-color: var(--primary);
-            background-color: var(--primary-light);
-        }
-
-        .sol-chip.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .status-box {
-            background-color: #fffbeb;
-            border: 1px solid #fef3c7;
-            border-radius: 8px;
-            padding: 1rem;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* Hide/Show logic via class */
-        .content-panel {
-            display: none;
-        }
-
-        .content-panel.active {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
             display: block;
         }
 
-        .legend {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            justify-content: center;
-            margin-top: 0.5rem;
+        .text-container {
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+            margin-bottom: 15px;
         }
 
-        .legend-item {
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--highlight-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #b2f2bb;
+            padding-bottom: 5px;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .math-box {
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .interaction-prompt {
+            background-color: #e7f5ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: 500;
+            margin: 20px 0;
+            color: #1864ab;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        /* Right Panel: Interactive Canvas */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-color);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .slider-row {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 15px;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
         }
 
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
+        .slider-row label {
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        input[type=range] {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .info-panel {
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.05rem;
+            color: #495057;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            body, html {
+                overflow: auto;
+            }
+            .left-panel, .right-panel {
+                height: auto;
+            }
+            .right-panel {
+                min-height: 750px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">수특풀이 <span>ver6</span> 심화 문항 마스터</div>
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab(2)">문항 2번 (등비수열의 대소)</button>
-            <button class="tab-btn" onclick="switchTab(3)">문항 3번 (수열의 귀납적 정의)</button>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <div class="left-panel">
-            
-            <div id="prob2-content" class="content-panel active">
-                <div class="problem-card">
-                    <span class="problem-tag">[26008-0151] Level 3 심화</span>
-                    <p class="problem-title">
-                        모든 항이 0이 아닌 정수인 두 등비수열 \( \{a_n\}, \{b_n\} \)이 다음 조건을 만족시킨다.
-                    </p>
-                    <div class="problem-box">
-                        (가) \( \frac{a_2}{a_1} = \frac{b_2}{b_1} \), &nbsp; \( \frac{a_4}{a_2} - \frac{b_6}{b_5} < 6 \)<br><br>
-                        (나) 모든 자연수 \( n \)에 대하여 \( a_n < b_n < a_{n+1} \)이 성립한다.
-                    </div>
-                    <p class="problem-title">\( a_1 b_1 = 96 \)일 때, \( a_3 + b_3 \)의 값을 구하시오.</p>
-                </div>
-
-                <h2>수식 및 논리 해설</h2>
-                
-                <div class="step">
-                    <div class="step-title">조건 (가) 해석: 공비의 일치 및 범위 도출</div>
-                    <p>
-                        수열 \( \{a_n\} \)의 공비를 \( r_a \), 수열 \( \{b_n\} \)의 공비를 \( r_b \)라 합시다. 조건 (가)의 첫 등식에서 다음이 성립합니다.
-                    </p>
-                    <div class="math-block">
-                        \[ \frac{a_2}{a_1} = r_a, \quad \frac{b_2}{b_1} = r_b \implies r_a = r_b = r \]
-                    </div>
-                    <p>두 수열의 공비가 동일하므로, 두 번째 부등식에 대입하여 \( r \)의 범위를 한정할 수 있습니다.</p>
-                    <div class="math-block">
-                        \[ \frac{a_4}{a_2} - \frac{b_6}{b_5} = r^2 - r < 6 \implies r^2 - r - 6 < 0 \]
-                        \[ (r-3)(r+2) < 0 \implies -2 < r < 3 \]
-                    </div>
-                </div>
-
-                <div class="step">
-                    <div class="step-title">조건 (나) 해석: 공비 고정 및 첫째항 부호 파악</div>
-                    <p>
-                        모든 항이 0이 아닌 정수이므로 공비 \( r \) 또한 정수 범위 내에서 고려되어야 합니다. 범위 내 정수는 \( -1, 0, 1, 2 \) 입니다.
-                    </p>
-                    <ul>
-                        <li>\( r = 0 \): 모든 항이 0이 아니라는 조건에 모순됩니다.</li>
-                        <li>\( r = 1 \): \( a_n < b_n < a_n \)이 되어 모순이 발생합니다.</li>
-                        <li>\( r = -1 \): 항의 부호가 교대로 바뀌므로 항상 \( a_n < b_n < a_{n+1} \)이 성립할 수 없습니다.</li>
-                    </ul>
-                    <p>따라서 만족하는 유일한 공비는 <span class="highlight">\( r = 2 \)</span> 입니다.</p>
-                    <p>또한 \( a_1 < b_1 < a_2 = 2a_1 \)이 성립하기 위해 양수 조건이 필수적이므로, \( a_1 > 0, b_1 > 0 \) 임을 알 수 있습니다.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-title">첫째항 결정 및 최종 연산</div>
-                    <p>조건 \( a_1 b_1 = 96 \)과 부등식을 조합합니다.</p>
-                    <div class="math-block">
-                        \[ a_1 < b_1 < 2a_1 \implies a_1^2 < a_1 b_1 < 2a_1^2 \implies a_1^2 < 96 < 2a_1^2 \]
-                    </div>
-                    <p>이 연립 부등식을 만족하는 자연수 \( a_1 \)을 찾으면 다음과 같습니다.</p>
-                    <div class="math-block">
-                        \[ a_1^2 < 96 \implies a_1 \le 9 \]
-                        \[ 2a_1^2 > 96 \implies a_1^2 > 48 \implies a_1 \ge 7 \]
-                    </div>
-                    <p>
-                        따라서 가능한 \( a_1 \)은 \( 7, 8, 9 \) 입니다. 이 중 \( b_1 = \frac{96}{a_1} \)이 정수가 되도록 하는 유일한 값은 <span class="highlight">\( a_1 = 8 \)</span> 이며, 이때 <span class="highlight">\( b_1 = 12 \)</span> 입니다. (\( 8 < 12 < 16 \) 으로 조건 부합)
-                    </p>
-                    <div class="math-block">
-                        \[ a_3 = a_1 \cdot r^2 = 8 \cdot 4 = 32 \]
-                        \[ b_3 = b_1 \cdot r^2 = 12 \cdot 4 = 48 \]
-                        \[ \therefore a_3 + b_3 = 32 + 48 = 80 \]
-                    </div>
-                </div>
-            </div>
-
-            <div id="prob3-content" class="content-panel">
-                <div class="problem-card">
-                    <span class="problem-tag">[26008-0181] Level 3 실력완성</span>
-                    <p class="problem-title">
-                        수열 \( \{a_n\} \)이 다음 조건을 만족시키도록 하는 두 자연수 \( a_1, a_2 \)의 모든 순서쌍 \( (a_1, a_2) \)의 개수는?
-                    </p>
-                    <div class="problem-box">
-                        (가) 모든 자연수 \( n \)에 대하여 \( a_{n+2} = \begin{cases} a_n + 1 & (a_n \le a_{n+1}) \\ a_{n+1} & (a_n > a_{n+1}) \end{cases} \) 이다.<br><br>
-                        (나) \( \sum_{k=1}^{10} a_k = 50 \)
-                    </div>
-                    <p class="problem-title">① 6 &nbsp;&nbsp;&nbsp;&nbsp; ② 7 &nbsp;&nbsp;&nbsp;&nbsp; ③ 8 &nbsp;&nbsp;&nbsp;&nbsp; ④ 9 &nbsp;&nbsp;&nbsp;&nbsp; ⑤ 10</p>
-                </div>
-
-                <h2>수식 및 논리 해설</h2>
-
-                <div class="step">
-                    <div class="step-title">귀납적 정의 규칙 분석 및 케이스 분류</div>
-                    <p>
-                        다음 항을 결정할 때 바로 직전의 두 항의 대소 관계를 이용하므로, 초기 조건 \( a_1 \)과 \( a_2 \)의 크기 관계에 따라 수열의 진행 방향이 완전히 결정됩니다.
-                    </p>
-                </div>
-
-                <div class="step">
-                    <div class="step-title">Case 1: \( a_1 \le a_2 \) 인 경우</div>
-                    <p>\( n=1 \)일 때 \( a_1 \le a_2 \)이므로 \( a_3 = a_1 + 1 \)이 됩니다.</p>
-                    <ul>
-                        <li>
-                            <strong>Subcase 1-1 (\( a_1 = a_2 \)):</strong><br>
-                            이 경우 수열은 부드럽게 2개씩 쌍을 지어 커집니다: \( a_1, a_1, a_1+1, a_1+1, a_1+2, a_1+2, \dots \)<br>
-                            10개 항의 합: \( 2[5a_1 + 10] = 10a_1 + 20 = 50 \implies a_1 = 3 \). <br>
-                            따라서 순서쌍 <span class="highlight">\( (3, 3) \)</span> 1개를 얻습니다.
-                        </li>
-                        <li style="margin-top: 0.5rem;">
-                            <strong>Subcase 1-2 (\( a_2 \ge a_1 + 2 \)):</strong><br>
-                            \( a_3 = a_1 + 1 \)이므로 여전히 \( a_2 > a_3 \)가 되어 \( a_4 = a_3 = a_1 + 1 \)이 되며, 이후 항들은 \( a_2 \)의 지배력에서 벗어나 2개씩 정체하며 증가합니다.<br>
-                            전체 수열 형태: \( a_1, a_2, a_1+1, a_1+1, a_1+2, a_1+2, a_1+3, a_1+3, a_1+4, a_1+4 \)<br>
-                            합 공식: \( 9a_1 + a_2 + 20 = 50 \implies 9a_1 + a_2 = 30 \)<br>
-                            조건(\( a_2 \ge a_1+2 \)) 만족하는 쌍: <span class="highlight">\( (1, 21), (2, 12) \)</span> 2개를 확보합니다.
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="step">
-                    <div class="step-title">Case 2: \( a_1 > a_2 \) 인 경우</div>
-                    <p>
-                        \( n=1 \)일 때 \( a_1 > a_2 \)이므로 \( a_3 = a_2 \)가 됩니다. <br>
-                        이후 연속하는 두 항이 같아지므로 다음 규칙에 의해 2개씩 유지되며 1씩 증가하는 구조를 이룹니다.<br>
-                        전체 수열 형태: \( a_1, a_2, a_2, a_2+1, a_2+1, a_2+2, a_2+2, a_2+3, a_2+3, a_2+4 \)
-                    </p>
-                    <div class="math-block">
-                        \[ \sum_{k=1}^{10} a_k = a_1 + 9a_2 + 16 = 50 \implies a_1 + 9a_2 = 34 \]
-                    </div>
-                    <p>초기 대소 관계 조건인 \( a_1 > a_2 \)를 충족하는 자연수 해를 구합니다:</p>
-                    <div class="math-block">
-                        \[ a_2 = 1 \implies a_1 = 25 \quad (25 > 1 \ \text{성립}) \]
-                        \[ a_2 = 2 \implies a_1 = 16 \quad (16 > 2 \ \text{성립}) \]
-                        \[ a_2 = 3 \implies a_1 = 7 \quad (7 > 3 \ \text{성립}) \]
-                    </div>
-                    <p>따라서 <span class="highlight">\( (25, 1), (16, 2), (7, 3) \)</span> 총 3개의 유효한 순서쌍을 찾아낼 수 있습니다.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-title">결론 및 정답 선지</div>
-                    <p>두 대소 조건 케이스에서 발생한 모든 유효 순서쌍을 합산합니다.</p>
-                    <div class="math-block">
-                        \[ \text{총 개수} = 3 \ (\text{Case 1}) + 3 \ (\text{Case 2}) = 6 \]
-                    </div>
-                    <p>정답은 <strong>① 6</strong> 입니다.</p>
-                </div>
-            </div>
-
+<div class="container">
+    <div class="left-panel">
+        <img src="image_ee7b58.png" alt="원본 문제 이미지" class="problem-desc">
+        
+        <div class="text-container">
+            주어진 기하학적 조건들을 삼각함수의 법칙을 활용하여 해석하고, 두 점 Q와 P의 위치를 순차적으로 확정하여 선분의 길이를 구하는 문제입니다. 
         </div>
 
-        <div class="right-panel">
-            
-            <div id="prob2-visual" class="dashboard-card">
-                <div class="dashboard-title">📈 수열의 샌드위치 정리 시각화 (문항 2)</div>
-                <div class="legend">
-                    <div class="legend-item"><div class="legend-color" style="background-color: var(--primary);"></div>수열 \( a_n \)</div>
-                    <div class="legend-item"><div class="legend-color" style="background-color: var(--secondary);"></div>수열 \( b_n \)</div>
-                    <div class="legend-item"><div class="legend-color" style="background-color: #cbd5e1; border: 1px dashed #94a3b8;"></div>다음 항 \( a_{n+1} \) 바운드</div>
-                </div>
-                <canvas id="canvas2"></canvas>
-                
-                <div class="control-group">
-                    <div class="control-label">
-                        <span>첫째항 \( a_1 \) 값 조정:</span>
-                        <span id="val-a1" style="color: var(--primary); font-weight: bold;">8</span>
-                    </div>
-                    <input type="range" id="slider-a1" class="slider" min="4" max="12" step="1" value="8">
-                </div>
-
-                <div class="status-box" style="margin-top: 1rem;" id="status-p2">
-                    </div>
+        <div class="step-title">Step 1: 조건 (가) 해석 및 점 Q 좌표 도출</div>
+        <div class="text-container">
+            삼각형 \( OAQ \)에서 세 각을 각각 \( A, Q, O \)라고 합시다. 코사인 법칙을 이용하여 조건 (가)의 좌변을 변의 길이로 풀어 쓰면 다음과 같습니다.
+            <div class="math-box">
+                \[ 2\cos A \cos Q + \cos O = 2 \left\\(frac{a^2+c^2-b^2}{2ac}\\right\\)\left\\(frac{b^2+c^2-a^2}{2bc}\\right\\) + \frac{a^2+b^2-c^2}{2ab} \]
             </div>
-
-            <div id="prob3-visual" class="dashboard-card" style="display: none;">
-                <div class="dashboard-title">🧮 시뮬레이터 및 유효 순서쌍 분석 (문항 3)</div>
-                <canvas id="canvas3"></canvas>
-                
-                <div class="control-group">
-                    <label class="control-label">정답을 만족하는 유효 순서쌍 프리셋 선택:</label>
-                    <div class="solutions-grid">
-                        <button class="sol-chip active" onclick="setPreset(3, 3)">a₁=3, a₂=3</button>
-                        <button class="sol-chip" onclick="setPreset(1, 21)">a₁=1, a₂=21</button>
-                        <button class="sol-chip" onclick="setPreset(2, 12)">a₁=2, a₂=12</button>
-                        <button class="sol-chip" onclick="setPreset(25, 1)">a₁=25, a₂=1</button>
-                        <button class="sol-chip" onclick="setPreset(16, 2)">a₁=16, a₂=2</button>
-                        <button class="sol-chip" onclick="setPreset(7, 3)">a₁=7, a₂=3</button>
-                    </div>
-                </div>
-
-                <div class="control-group" style="border-top: 1px solid var(--border); padding-top: 1rem;">
-                    <div class="control-label">
-                        <span>자유 탐색 변경 - \( a_1 \):</span>
-                        <span id="val-p3-a1" font-weight="bold">3</span>
-                    </div>
-                    <input type="range" id="slider-p3-a1" class="slider" min="1" max="30" step="1" value="3">
-                </div>
-                
-                <div class="control-group">
-                    <div class="control-label">
-                        <span>자유 탐색 변경 - \( a_2 \):</span>
-                        <span id="val-p3-a2" font-weight="bold">3</span>
-                    </div>
-                    <input type="range" id="slider-p3-a2" class="slider" min="1" max="25" step="1" value="3">
-                </div>
-
-                <div class="status-box" id="status-p3">
-                    </div>
+            분모를 통분하고 분자를 전개하여 정리하면,
+            <div class="math-box">
+                \[ \frac{c^4 - (a^2-b^2)^2 + c^2(a^2+b^2-c^2)}{2abc^2} = \frac{-a^4 + 2a^2b^2 - b^4 + a^2c^2 + b^2c^2}{2abc^2} \]
             </div>
+            이 값이 우변인 \\\(frac{2ab}{c^2} = \\frac{4a^2b^2}{2abc^2} \\\) 와 같아야 하므로, 분자끼리 비교합니다.
+            <div class="math-box">
+                \[ -a^4 + 2a^2b^2 - b^4 + a^2c^2 + b^2c^2 = 4a^2b^2 \]
+                \[ c^2(a^2+b^2) = a^4 + 2a^2b^2 + b^4 = (a^2+b^2)^2 \]
+            </div>
+            \( a^2+b^2 \neq 0 \) 이므로 양변을 나누면 <b>\( c^2 = a^2 + b^2 \)</b> 가 도출됩니다. 즉, 삼각형 \( OAQ \)는 <b>\\\(angle AOQ = 90^\\circ \\\) 인 직각삼각형</b>입니다.<br><br>
+            점 \( O(0,0) \) 과 \( A(3,3) \) 을 잇는 선분의 기울기는 1이므로, 직교하는 선분 \( OQ \) 의 기울기는 -1입니다. 제4사분면에서 직선 \( y = -x \) 와 곡선 \( y = x^2 - 2x \) 의 교점을 찾으면,
+            <div class="math-box">\[ -x = x^2 - 2x \implies x(x-1) = 0 \implies x = 1 \quad (x > 0) \]</div>
+            따라서 점 <b>\( Q(1, -1) \)</b> 입니다.
+        </div>
 
+        <div class="interaction-prompt text-container">
+            💡 우측 슬라이더를 1부터 4까지 움직여 보세요. 직각삼각형 조건에서 점 Q를 찾는 과정부터, 두 외접원을 이용하여 점 P를 확정하는 기하학적 원리가 차례대로 시각화됩니다!
+        </div>
+
+        <div class="step-title">Step 2: 조건 (나)와 사인 법칙을 통한 외접원 분석</div>
+        <div class="text-container">
+            점 \( O, A, Q \)의 좌표를 알았으므로 각 변의 길이를 구합니다.<br>
+            \( a = \overline{OA} = 3\sqrt{2} \), \( b = \overline{OQ} = \sqrt{2} \), \( c = \overline{AQ} = 2\sqrt{5} \).<br>
+            직각삼각형 \( OAQ \)에서 \\\(sin(\\angle OAQ\\) = \frac{b}{c} = \frac{\sqrt{2}}{2\sqrt{5}} = \frac{1}{\sqrt{10}} \) 입니다.<br>
+            조건 (나)에 의해 <b>\\\(cos(\\angle OPA\\) = \frac{1}{\sqrt{10}} \)</b> 이며, 이 각은 예각이므로 \\\(sin(\\angle OPA\\) = \frac{3}{\sqrt{10}} \) 입니다.
+            <br><br>
+            삼각형 \( OPA \)에 사인 법칙을 적용해 외접원의 반지름 \( R \)을 구합니다.
+            <div class="math-box">\[ 2R = \frac{\overline{OA}}{\sin\\(angle OPA\\)} = \frac{3\sqrt{2}}{3 / \sqrt{10}} = 2\sqrt{5} \]</div>
+            놀랍게도 삼각형 \( OPA \)의 외접원 지름이 선분 \\\(overline{AQ} \\\) 의 길이(\( 2\sqrt{5} \))와 같습니다!
+        </div>
+
+        <div class="step-title">Step 3: 점 P의 좌표 찾기</div>
+        <div class="text-container">
+            지름이 \( 2\sqrt{5} \) 인 원 중 점 \( O(0,0) \)과 \( A(3,3) \)을 지나는 원의 중심 \( (x, y) \)는 두 개 존재합니다.
+            <div class="math-box">\[ x^2 + y^2 = 5 \quad \text{그리고} \quad (x-3)^2 + (y-3)^2 = 5 \]</div>
+            연립방정식을 풀면 중심은 \( (2,1) \) 또는 \( (1,2) \) 입니다.<br>
+            \( (2,1) \)은 선분 \( AQ \)의 중점으로, 제2사분면에서 곡선과 교점이 없습니다. 따라서 삼각형 \( OPA \)의 외접원의 중심은 <b>\( (1,2) \)</b> 이며 원의 방정식은 \( (x-1)^2 + (y-2)^2 = 5 \) 입니다.
+            <br><br>
+            이 원과 곡선 \( y = x^2 - 2x \) 의 교점을 구합니다. (\( x^2 + y^2 - 2x - 4y = 0 \))
+            <div class="math-box">\[ x^2 + (x^2-2x)^2 - 2x - 4(x^2-2x) = 0 \implies x(x-3)(x-2)(x+1) = 0 \]</div>
+            점 P는 제2사분면(\( x < 0 \))에 있으므로 <b>\( x = -1 \)</b> 입니다. 대입하면 \( y = 3 \) 이 되어 <b>\( P(-1, 3) \)</b> 을 얻습니다.
+        </div>
+
+        <div class="step-title">Step 4: 선분 PQ 제곱 계산</div>
+        <div class="text-container">
+            마지막으로 두 점 \( P(-1, 3) \) 과 \( Q(1, -1) \) 사이의 거리 제곱을 구합니다.
+            <div class="math-box">\[ \overline{PQ}^2 = (1 - (-1))^2 + (-1 - 3)^2 = 2^2 + (-4)^2 = 4 + 16 = 20 \]</div>
+            따라서 정답은 <b>20</b> 입니다.
         </div>
     </div>
 
-    <script>
-        // Tab switching logic
-        function switchTab(probNum) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+    <div class="right-panel">
+        <div class="canvas-container" id="canvasWrapper">
+            <canvas id="mathCanvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="slider-row">
+                <label for="step-slider">해설 단계 시각화:</label>
+                <input type="range" id="step-slider" min="1" max="4" step="1" value="1">
+            </div>
             
-            if(probNum === 2) {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('prob2-content').classList.add('active');
-                document.getElementById('prob2-visual').style.display = 'block';
-                document.getElementById('prob3-visual').style.display = 'none';
-                drawProblem2();
-            } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('prob3-content').classList.add('active');
-                document.getElementById('prob2-visual').style.display = 'none';
-                document.getElementById('prob3-visual').style.display = 'block';
-                drawProblem3();
-            }
+            <div class="info-panel" id="info-panel">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('mathCanvas');
+    const ctx = canvas.getContext('2d');
+    const wrapper = document.getElementById('canvasWrapper');
+    const stepSlider = document.getElementById('step-slider');
+    const infoPanel = document.getElementById('info-panel');
+
+    // Mathematical coordinate settings
+    const view = {
+        xMin: -2.5, xMax: 4.5,
+        yMin: -2.5, yMax: 4.5,
+        pad: 40
+    };
+
+    function mapX(x, w) {
+        return view.pad + ((x - view.xMin) / (view.xMax - view.xMin)) * (w - 2 * view.pad);
+    }
+
+    function mapY(y, h) {
+        return h - view.pad - ((y - view.yMin) / (view.yMax - view.yMin)) * (h - 2 * view.pad);
+    }
+
+    function resizeCanvas() {
+        canvas.width = wrapper.clientWidth;
+        canvas.height = wrapper.clientHeight;
+        draw();
+    }
+
+    function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const step = parseInt(stepSlider.value);
+
+        // Core points
+        const O = { x: 0, y: 0 };
+        const A = { x: 3, y: 3 };
+        const Q = { x: 1, y: -1 };
+        const P = { x: -1, y: 3 };
+        const C1 = { x: 2, y: 1 }; // Center of circumcircle OAQ
+        const C2 = { x: 1, y: 2 }; // Center of circumcircle OPA
+
+        // --- Grid & Axes ---
+        ctx.strokeStyle = '#e9ecef';
+        ctx.lineWidth = 1;
+        for (let i = Math.ceil(view.xMin); i <= Math.floor(view.xMax); i++) {
+            ctx.beginPath(); ctx.moveTo(mapX(i, w), 0); ctx.lineTo(mapX(i, w), h); ctx.stroke();
+        }
+        for (let i = Math.ceil(view.yMin); i <= Math.floor(view.yMax); i++) {
+            ctx.beginPath(); ctx.moveTo(0, mapY(i, h)); ctx.lineTo(w, mapY(i, h)); ctx.stroke();
         }
 
-        // --- PROBLEM 2 INTERACTIVE LOGIC ---
-        const canvas2 = document.getElementById('canvas2');
-        const ctx2 = canvas2.getContext('2d');
-        const sliderA1 = document.getElementById('slider-a1');
-        const valA1 = document.getElementById('val-a1');
-        const statusP2 = document.getElementById('status-p2');
+        ctx.strokeStyle = '#adb5bd';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, mapY(0, h)); ctx.lineTo(w, mapY(0, h)); ctx.stroke(); // X
+        ctx.beginPath(); ctx.moveTo(mapX(0, w), 0); ctx.lineTo(mapX(0, w), h); ctx.stroke(); // Y
+        
+        ctx.fillStyle = '#495057';
+        ctx.font = '14px sans-serif';
+        ctx.fillText('x', w - view.pad + 10, mapY(0, h) + 15);
+        ctx.fillText('y', mapX(0, w) + 10, view.pad - 10);
 
-        function drawProblem2() {
-            const a1 = parseInt(sliderA1.value);
-            valA1.textContent = a1;
-            const b1 = 96 / a1;
-            const isIntegerB1 = Number.isInteger(b1);
+        // --- Curve y = x^2 - 2x ---
+        ctx.strokeStyle = '#343a40';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let isFirst = true;
+        for (let px = view.pad; px <= w - view.pad; px += 2) {
+            let x = view.xMin + ((px - view.pad) / (w - 2 * view.pad)) * (view.xMax - view.xMin);
+            let y = x * x - 2 * x;
+            if (y > view.yMax + 1 || y < view.yMin - 1) { isFirst = true; continue; }
+            if (isFirst) { ctx.moveTo(px, mapY(y, h)); isFirst = false; }
+            else { ctx.lineTo(px, mapY(y, h)); }
+        }
+        ctx.stroke();
 
-            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+        // Helper function for points
+        const drawPoint = (pt, label, offX, offY, color = '#212529') => {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(mapX(pt.x, w), mapY(pt.y, h), 5, 0, 2*Math.PI); ctx.fill();
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText(label, mapX(pt.x, w) + offX, mapY(pt.y, h) + offY);
+        };
+
+        // Draw Base points (always visible)
+        drawPoint(O, 'O(0,0)', -25, 20);
+        drawPoint(A, 'A(3,3)', 10, -10);
+
+        // --- Step Based Rendering ---
+        let infoText = "";
+
+        if (step >= 1) {
+            infoText = "<b>[Step 1]</b> 기본 곡선 \( y = x^2 - 2x \) 위에 점 O와 A가 주어졌습니다.";
+        }
+        
+        if (step >= 2) {
+            // Right angle lines
+            ctx.strokeStyle = '#e03131';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(mapX(O.x, w), mapY(O.y, h)); ctx.lineTo(mapX(A.x, w), mapY(A.y, h)); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(mapX(O.x, w), mapY(O.y, h)); ctx.lineTo(mapX(Q.x, w), mapY(Q.y, h)); ctx.stroke();
+            ctx.setLineDash([]);
             
-            // Layout setups
-            const padX = 50, padY = 30;
-            const w = canvas2.width - 2 * padX;
-            const h = canvas2.height - 2 * padY;
-
-            // Generate elements for 4 terms
-            let r = 2;
-            let a_seq = [], b_seq = [];
-            for(let n=1; n<=4; n++) {
-                a_seq.push(a1 * Math.pow(r, n-1));
-                b_seq.push(b1 * Math.pow(r, n-1));
-            }
-
-            const maxVal = Math.max(a_seq[3], isIntegerB1 ? b_seq[3] : 100);
-
-            function mapX(n) { return padX + ((n - 1) / 3) * w; }
-            function mapY(val) { return canvas2.height - padY - (val / maxVal) * h; }
-
-            // Draw Guidelines / Grid lines
-            ctx2.strokeStyle = "#f1f5f9";
-            ctx2.lineWidth = 1;
-            for(let i=1; i<=4; i++) {
-                ctx2.beginPath();
-                ctx2.moveTo(mapX(i), padY);
-                ctx2.lineTo(mapX(i), canvas2.height - padY);
-                ctx2.stroke();
-                
-                ctx2.fillStyle = "#64748b";
-                ctx2.font = "11px sans-serif";
-                ctx2.fillText(`n=${i}`, mapX(i) - 10, canvas2.height - padY + 15);
-            }
-
-            // Draw Squeeze condition areas
-            for(let i=0; i<3; i++) {
-                ctx2.fillStyle = "rgba(16, 185, 129, 0.04)";
-                ctx2.beginPath();
-                ctx2.moveTo(mapX(i+1), mapY(a_seq[i]));
-                ctx2.lineTo(mapX(i+2), mapY(a_seq[i+1]));
-                ctx2.lineTo(mapX(i+1), mapY(a_seq[i+1]));
-                ctx2.closePath();
-                ctx2.fill();
-            }
-
-            // Draw sequence A line
-            ctx2.strokeStyle = "var(--primary)";
-            ctx2.lineWidth = 2;
-            ctx2.beginPath();
-            for(let i=0; i<4; i++) {
-                if(i===0) ctx2.moveTo(mapX(i+1), mapY(a_seq[i]));
-                else ctx2.lineTo(mapX(i+1), mapY(a_seq[i]));
-            }
-            ctx2.stroke();
-
-            // Draw sequence B line if integer
-            if(isIntegerB1) {
-                ctx2.strokeStyle = "var(--secondary)";
-                ctx2.lineWidth = 2;
-                ctx2.beginPath();
-                for(let i=0; i<4; i++) {
-                    if(i===0) ctx2.moveTo(mapX(i+1), mapY(b_seq[i]));
-                    else ctx2.lineTo(mapX(i+1), mapY(b_seq[i]));
-                }
-                ctx2.stroke();
-            }
-
-            // Dots decoration
-            for(let i=0; i<4; i++) {
-                ctx2.fillStyle = "var(--primary)";
-                ctx2.beginPath();
-                ctx2.arc(mapX(i+1), mapY(a_seq[i]), 4, 0, 2*Math.PI);
-                ctx2.fill();
-
-                if(isIntegerB1) {
-                    ctx2.fillStyle = "var(--secondary)";
-                    ctx2.beginPath();
-                    ctx2.arc(mapX(i+1), mapY(b_seq[i]), 4, 0, 2*Math.PI);
-                    ctx2.fill();
-                }
-            }
-
-            // Text info composition
-            if(a1 === 8) {
-                statusP2.innerHTML = `✅ <strong>정답 조건 충족!</strong><br>• \( a_1 = 8 \) 이면 \( b_1 = 12 \) (정수) 가 됩니다.<br>• 모든 \( n \)에 대해 \( a_n < b_n < a_{n+1} \) 부등식을 완벽히 만족합니다.`;
-                statusP2.style.backgroundColor = "#ecfdf5";
-                statusP2.style.borderColor = "#a7f3d0";
-            } else {
-                statusP2.innerHTML = `❌ <strong>조건 불만족 상태</strong><br>• 현재 설정한 \( a_1 = ${a1} \) 일 때 \( b_1 = ${b1.toFixed(2)} \) 입니다.<br>` + 
-                (!isIntegerB1 ? `• 항의 값인 \( b_1 \)이 <strong>정수가 아니므로</strong> 탈락입니다.` : `• \( a_1^2 < 96 < 2a_1^2 \) 범위를 벗어나 대소 제약조건을 위반합니다.`);
-                statusP2.style.backgroundColor = "#fff1f2";
-                statusP2.style.borderColor = "#fecdd3";
-            }
-        }
-
-        sliderA1.addEventListener('input', drawProblem2);
-
-
-        // --- PROBLEM 3 INTERACTIVE LOGIC ---
-        const canvas3 = document.getElementById('canvas3');
-        const ctx3 = canvas3.getContext('2d');
-        const sliderP3A1 = document.getElementById('slider-p3-a1');
-        const sliderP3A2 = document.getElementById('slider-p3-a2');
-        const valP3A1 = document.getElementById('val-p3-a1');
-        const valP3A2 = document.getElementById('val-p3-a2');
-        const statusP3 = document.getElementById('status-p3');
-
-        function setPreset(a1, a2) {
-            document.querySelectorAll('.sol-chip').forEach(btn => {
-                if(btn.textContent.includes(`a₁=${a1}`) && btn.textContent.includes(`a₂=${a2}`)) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            sliderP3A1.value = a1;
-            sliderP3A2.value = a2;
-            drawProblem3();
-        }
-
-        function drawProblem3() {
-            const a1 = parseInt(sliderP3A1.value);
-            const a2 = parseInt(sliderP3A2.value);
+            // Draw Q
+            drawPoint(Q, 'Q(1,-1)', 10, 20, '#e03131');
             
-            valP3A1.textContent = a1;
-            valP3A2.textContent = a2;
+            // Right angle symbol
+            const sSize = 15;
+            ctx.strokeStyle = '#e03131';
+            ctx.beginPath();
+            ctx.moveTo(mapX(0.2, w), mapY(0.2, h));
+            ctx.lineTo(mapX(0.4, w), mapY(0.0, h));
+            ctx.lineTo(mapX(0.2, w), mapY(-0.2, h));
+            ctx.stroke();
 
-            // Generate sequence based on recursive relation
-            let a = [a1, a2];
-            for(let n=0; n<8; n++) {
-                if(a[n] <= a[n+1]) {
-                    a.push(a[n] + 1);
-                } else {
-                    a.push(a[n+1]);
-                }
-            }
+            infoText = "<b>[Step 2]</b> 조건 (가)에 의해 \( \\angle AOQ = 90^\\circ \) 이 증명되며, 선분 OA와 수직인 방향에서 곡선과 만나는 점 <b>Q(1, -1)</b>를 찾습니다.";
+        }
 
-            const totalSum = a.reduce((acc, v) => acc + v, 0);
-
-            // Draw Graph
-            ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
-            const padX = 40, padY = 30;
-            const w = canvas3.width - 2 * padX;
-            const h = canvas3.height - 2 * padY;
-
-            const maxVal = Math.max(...a, 25);
-            function mapX(idx) { return padX + (idx / 9) * w; }
-            function mapY(val) { return canvas3.height - padY - (val / maxVal) * h; }
-
-            // Draw Y Grid lines
-            ctx3.strokeStyle = "#f1f5f9";
-            ctx3.lineWidth = 1;
-            for(let val=5; val<=maxVal; val+=5) {
-                ctx3.beginPath();
-                ctx3.moveTo(padX, mapY(val));
-                ctx3.lineTo(canvas3.width - padX, mapY(val));
-                ctx3.stroke();
-            }
-
-            // Draw Sequence Path
-            ctx3.strokeStyle = totalSum === 50 ? "var(--success)" : "var(--accent)";
-            ctx3.lineWidth = 3;
-            ctx3.beginPath();
-            for(let i=0; i<10; i++) {
-                if(i===0) ctx3.moveTo(mapX(i), mapY(a[i]));
-                else ctx3.lineTo(mapX(i), mapY(a[i]));
-            }
-            ctx3.stroke();
-
-            // Draw Index Nodes
-            for(let i=0; i<10; i++) {
-                ctx3.fillStyle = totalSum === 50 ? "var(--success)" : "var(--accent)";
-                ctx3.beginPath();
-                ctx3.arc(mapX(i), mapY(a[i]), 4, 0, 2*Math.PI);
-                ctx3.fill();
-                
-                ctx3.fillStyle = "#64748b";
-                ctx3.font = "10px sans-serif";
-                if(i % 2 === 0 || i === 9) {
-                    ctx3.fillText(`a${i+1}`, mapX(i) - 6, canvas3.height - padY + 14);
-                }
-            }
-
-            // Status composition
-            let isTarget = (totalSum === 50);
-            statusP3.innerHTML = `📊 <strong>합산 결과 요약</strong><br>` + 
-            `• 전체 수열: [${a.join(', ')}]<br>` + 
-            `• 현재 10개 항의 총합 (\u2211a_k) = <span style="font-weight:bold; color:${isTarget ? 'var(--success)':'var(--accent)'};">${totalSum}</span> ` +
-            `(${isTarget ? '🎯 50 충족 완료!' : '❌ 50이 아닙니다.'})`;
+        if (step >= 3) {
+            // Circle 1 (Circumcircle of OAQ)
+            ctx.strokeStyle = 'rgba(51, 154, 240, 0.4)';
+            ctx.fillStyle = 'rgba(51, 154, 240, 0.05)';
+            ctx.lineWidth = 2;
+            const radiusCanvas = Math.sqrt(5) / (view.xMax - view.xMin) * (w - 2 * view.pad);
+            ctx.beginPath(); ctx.arc(mapX(C1.x, w), mapY(C1.y, h), radiusCanvas, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
             
-            if(isTarget) {
-                statusP3.style.backgroundColor = "#ecfdf5";
-                statusP3.style.borderColor = "#a7f3d0";
-            } else {
-                statusP3.style.backgroundColor = "#fff1f2";
-                statusP3.style.borderColor = "#fecdd3";
-            }
+            // Triangle OAQ
+            ctx.strokeStyle = '#339af0';
+            ctx.beginPath(); ctx.moveTo(mapX(A.x, w), mapY(A.y, h)); ctx.lineTo(mapX(Q.x, w), mapY(Q.y, h)); ctx.stroke();
+
+            infoText = "<b>[Step 3]</b> 직각삼각형 OAQ의 외접원은 선분 AQ를 지름으로 갖습니다. (중심: (2,1), 반지름: \( \\sqrt{5} \))";
         }
 
-        sliderP3A1.addEventListener('input', () => {
-            // Uncheck preset highlights on free manual drag
-            document.querySelectorAll('.sol-chip').forEach(btn => btn.classList.remove('active'));
-            drawProblem3();
-        });
-        sliderP3A2.addEventListener('input', () => {
-            document.querySelectorAll('.sol-chip').forEach(btn => btn.classList.remove('active'));
-            drawProblem3();
-        });
+        if (step >= 4) {
+            // Circle 2 (Circumcircle of OPA)
+            ctx.strokeStyle = 'rgba(43, 138, 62, 0.5)';
+            ctx.fillStyle = 'rgba(43, 138, 62, 0.05)';
+            const radiusCanvas = Math.sqrt(5) / (view.xMax - view.xMin) * (w - 2 * view.pad);
+            ctx.beginPath(); ctx.arc(mapX(C2.x, w), mapY(C2.y, h), radiusCanvas, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+            
+            // Draw P
+            drawPoint(P, 'P(-1,3)', -65, -10, '#2b8a3e');
+            
+            // Triangle OPA
+            ctx.strokeStyle = '#2b8a3e';
+            ctx.beginPath(); ctx.moveTo(mapX(O.x, w), mapY(O.y, h)); ctx.lineTo(mapX(P.x, w), mapY(P.y, h)); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(mapX(A.x, w), mapY(A.y, h)); ctx.lineTo(mapX(P.x, w), mapY(P.y, h)); ctx.stroke();
 
-        // Initial setup run
-        window.onload = function() {
-            drawProblem2();
+            // Segment PQ
+            ctx.strokeStyle = '#845ef7';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(mapX(P.x, w), mapY(P.y, h)); ctx.lineTo(mapX(Q.x, w), mapY(Q.y, h)); ctx.stroke();
+            
+            // Measure PQ
+            const midPQ = { x: (P.x + Q.x)/2, y: (P.y + Q.y)/2 };
+            ctx.fillStyle = '#845ef7';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillText(`PQ² = 20`, mapX(midPQ.x, w) + 15, mapY(midPQ.y, h));
+
+            infoText = "<b>[Step 4]</b> 사인 법칙에 의해 삼각형 OPA의 외접원 반지름 역시 \( \\sqrt{5} \)임이 밝혀집니다. 이 새로운 원과 곡선의 제2사분면 교점이 <b>P(-1, 3)</b>가 되며, 최종 선분 PQ² = 20 이 계산됩니다.";
         }
-    </script>
+
+        // Update Text
+        infoPanel.innerHTML = infoText;
+        MathJax.typesetPromise([infoPanel]);
+    }
+
+    // Event Listeners
+    window.addEventListener('resize', resizeCanvas);
+    stepSlider.addEventListener('input', draw);
+
+    // Initial Setup
+    window.onload = resizeCanvas;
+
+</script>
+
 </body>
 </html>

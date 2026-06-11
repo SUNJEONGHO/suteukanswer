@@ -1,0 +1,387 @@
+[
+  {
+    "id": 20,
+    "subject": "수학1",
+    "chapter": "06 수열의 합과 수학적 귀납법",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\{a_n\\}, \\{b_n\\} \\)",
+      "( \\frac{a_2}{a_1} = \\frac{b_2}{b_1} \\)",
+      "( \\frac{a_4}{a_2} - \\frac{b_6}{b_5} < 6 \\)"
+    ],
+    "rawDollars": [
+      "${i}`, mapX(i) - 10, canvas2.height - padY + 15);\n            }\n\n            // Draw Squeeze condition areas\n            for(let i=0; i<3; i++) {\n                ctx2.fillStyle = \"rgba(16, 185, 129, 0.04)\";\n                ctx2.beginPath();\n                ctx2.moveTo(mapX(i+1), mapY(a_seq[i]));\n                ctx2.lineTo(mapX(i+2), mapY(a_seq[i+1]));\n                ctx2.lineTo(mapX(i+1), mapY(a_seq[i+1]));\n                ctx2.closePath();\n                ctx2.fill();\n            }\n\n            // Draw sequence A line\n            ctx2.strokeStyle = \"var(--primary)\";\n            ctx2.lineWidth = 2;\n            ctx2.beginPath();\n            for(let i=0; i<4; i++) {\n                if(i===0) ctx2.moveTo(mapX(i+1), mapY(a_seq[i]));\n                else ctx2.lineTo(mapX(i+1), mapY(a_seq[i]));\n            }\n            ctx2.stroke();\n\n            // Draw sequence B line if integer\n            if(isIntegerB1) {\n                ctx2.strokeStyle = \"var(--secondary)\";\n                ctx2.lineWidth = 2;\n                ctx2.beginPath();\n                for(let i=0; i<4; i++) {\n                    if(i===0) ctx2.moveTo(mapX(i+1), mapY(b_seq[i]));\n                    else ctx2.lineTo(mapX(i+1), mapY(b_seq[i]));\n                }\n                ctx2.stroke();\n            }\n\n            // Dots decoration\n            for(let i=0; i<4; i++) {\n                ctx2.fillStyle = \"var(--primary)\";\n                ctx2.beginPath();\n                ctx2.arc(mapX(i+1), mapY(a_seq[i]), 4, 0, 2*Math.PI);\n                ctx2.fill();\n\n                if(isIntegerB1) {\n                    ctx2.fillStyle = \"var(--secondary)\";\n                    ctx2.beginPath();\n                    ctx2.arc(mapX(i+1), mapY(b_seq[i]), 4, 0, 2*Math.PI);\n                    ctx2.fill();\n                }\n            }\n\n            // Text info composition\n            if(a1 === 8) {\n                statusP2.innerHTML = `✅ <strong>정답 조건 충족!</strong><br>• \\( a_1 = 8 \\) 이면 \\( b_1 = 12 \\) (정수) 가 됩니다.<br>• 모든 \\( n \\)에 대해 \\( a_n < b_n < a_{n+1} \\) 부등식을 완벽히 만족합니다.`;\n                statusP2.style.backgroundColor = \"#ecfdf5\";\n                statusP2.style.borderColor = \"#a7f3d0\";\n            } else {\n                statusP2.innerHTML = `❌ <strong>조건 불만족 상태</strong><br>• 현재 설정한 \\( a_1 = $",
+      "${b1.toFixed(2)} \\) 입니다.<br>` + \n                (!isIntegerB1 ? `• 항의 값인 \\( b_1 \\)이 <strong>정수가 아니므로</strong> 탈락입니다.` : `• \\( a_1^2 < 96 < 2a_1^2 \\) 범위를 벗어나 대소 제약조건을 위반합니다.`);\n                statusP2.style.backgroundColor = \"#fff1f2\";\n                statusP2.style.borderColor = \"#fecdd3\";\n            }\n        }\n\n        sliderA1.addEventListener('input', drawProblem2);\n\n\n        // --- PROBLEM 3 INTERACTIVE LOGIC ---\n        const canvas3 = document.getElementById('canvas3');\n        const ctx3 = canvas3.getContext('2d');\n        const sliderP3A1 = document.getElementById('slider-p3-a1');\n        const sliderP3A2 = document.getElementById('slider-p3-a2');\n        const valP3A1 = document.getElementById('val-p3-a1');\n        const valP3A2 = document.getElementById('val-p3-a2');\n        const statusP3 = document.getElementById('status-p3');\n\n        function setPreset(a1, a2) {\n            document.querySelectorAll('.sol-chip').forEach(btn => {\n                if(btn.textContent.includes(`a₁=$",
+      "${a2}`)) {\n                    btn.classList.add('active');\n                } else {\n                    btn.classList.remove('active');\n                }\n            });\n            sliderP3A1.value = a1;\n            sliderP3A2.value = a2;\n            drawProblem3();\n        }\n\n        function drawProblem3() {\n            const a1 = parseInt(sliderP3A1.value);\n            const a2 = parseInt(sliderP3A2.value);\n            \n            valP3A1.textContent = a1;\n            valP3A2.textContent = a2;\n\n            // Generate sequence based on recursive relation\n            let a = [a1, a2];\n            for(let n=0; n<8; n++) {\n                if(a[n] <= a[n+1]) {\n                    a.push(a[n] + 1);\n                } else {\n                    a.push(a[n+1]);\n                }\n            }\n\n            const totalSum = a.reduce((acc, v) => acc + v, 0);\n\n            // Draw Graph\n            ctx3.clearRect(0, 0, canvas3.width, canvas3.height);\n            const padX = 40, padY = 30;\n            const w = canvas3.width - 2 * padX;\n            const h = canvas3.height - 2 * padY;\n\n            const maxVal = Math.max(...a, 25);\n            function mapX(idx) { return padX + (idx / 9) * w; }\n            function mapY(val) { return canvas3.height - padY - (val / maxVal) * h; }\n\n            // Draw Y Grid lines\n            ctx3.strokeStyle = \"#f1f5f9\";\n            ctx3.lineWidth = 1;\n            for(let val=5; val<=maxVal; val+=5) {\n                ctx3.beginPath();\n                ctx3.moveTo(padX, mapY(val));\n                ctx3.lineTo(canvas3.width - padX, mapY(val));\n                ctx3.stroke();\n            }\n\n            // Draw Sequence Path\n            ctx3.strokeStyle = totalSum === 50 ? \"var(--success)\" : \"var(--accent)\";\n            ctx3.lineWidth = 3;\n            ctx3.beginPath();\n            for(let i=0; i<10; i++) {\n                if(i===0) ctx3.moveTo(mapX(i), mapY(a[i]));\n                else ctx3.lineTo(mapX(i), mapY(a[i]));\n            }\n            ctx3.stroke();\n\n            // Draw Index Nodes\n            for(let i=0; i<10; i++) {\n                ctx3.fillStyle = totalSum === 50 ? \"var(--success)\" : \"var(--accent)\";\n                ctx3.beginPath();\n                ctx3.arc(mapX(i), mapY(a[i]), 4, 0, 2*Math.PI);\n                ctx3.fill();\n                \n                ctx3.fillStyle = \"#64748b\";\n                ctx3.font = \"10px sans-serif\";\n                if(i % 2 === 0 || i === 9) {\n                    ctx3.fillText(`a$"
+    ]
+  },
+  {
+    "id": 19,
+    "subject": "수학1",
+    "chapter": "06 수열의 합과 수학적 귀납법",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\frac{1}{S_k} - \\frac{1}{S_{k+1}} \\right)",
+      "( \\frac{1}{S_1} - \\frac{1}{S_2} \\right)",
+      "( \\frac{1}{S_n} - \\frac{1}{S_{n+1}} \\right)"
+    ],
+    "rawDollars": [
+      "${s_sign}1` : `$",
+      "${s_denom}`);\n\n            // a_n\n            let a_val;\n            let a_text;\n            if (i === 1) {\n                a_val = 1;\n                a_text = \"1\";\n            } else {\n                a_val = -1.5 * Math.pow(-0.5, i - 2);\n                let a_sign = a_val < 0 ? \"-\" : \"\";\n                let a_num = 3;\n                let a_denom = Math.pow(2, i - 1);\n                a_text = `$",
+      "${a_num}/$"
+    ]
+  },
+  {
+    "id": 18,
+    "subject": "수학1",
+    "chapter": "06 수열의 합과 수학적 귀납법",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\{a_n\\} \\)",
+      "(\\implies d > 0)",
+      "( \\sum_{k=1}^{11} (a_k + |a_k|)"
+    ],
+    "rawDollars": [
+      "${s_values[i]}`, px, py + 25);\n            }\n        }\n\n        // Display S_14 prominently\n        let p14_x = mapX(14, w);\n        let p14_y = mapY(s_values[13], h, yMin, yMax);\n        ctx.fillStyle = '#343a40';\n        ctx.fillText(`S_{14} = $",
+      "$m = $",
+      "$ 인 경우]</b> $"
+    ]
+  },
+  {
+    "id": 17,
+    "subject": "수학1",
+    "chapter": "05 등차수열과 등비수열",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\frac{81}{4} \\div 9 = \\frac{9}{4} = \\left(-\\frac{3}{2}\\right)",
+      "( \\left(-\\frac{8}{3}\\right)",
+      "(\\( S_5 \\)"
+    ],
+    "rawDollars": [
+      "${seq.id}]</b> $",
+      "$r$",
+      "${seq.r_str}$"
+    ]
+  },
+  {
+    "id": 16,
+    "subject": "수학1",
+    "chapter": "05 등차수열과 등비수열",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\{a_n\\} \\)",
+      "( \\{b_n\\} \\)",
+      "( \\frac{a_2}{a_1} = \\frac{b_2}{b_1} \\)"
+    ],
+    "rawDollars": [
+      "${a1}, b₁ = $"
+    ]
+  },
+  {
+    "id": 15,
+    "subject": "수학1",
+    "chapter": "05 등차수열과 등비수열",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\{a_n\\} \\)",
+      "( \\{12, 13, 15, 20, 37\\} \\)",
+      "(let i = 1; i <= 5; i++)"
+    ],
+    "rawDollars": [
+      "${label} = $",
+      "${seqIdx + 1}]</b> $",
+      "$a_2 = $"
+    ]
+  },
+  {
+    "id": 14,
+    "subject": "수학1",
+    "chapter": "04 사인법칙과 코사인법칙",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": false,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\frac{a^2+c^2-b^2}{2ac}\\right)",
+      "(\\frac{b^2+c^2-a^2}{2bc}\\right)",
+      "( \\frac{2ab}{c^2} = \\frac{4a^2b^2}{2abc^2} \\)"
+    ],
+    "rawDollars": []
+  },
+  {
+    "id": 13,
+    "subject": "수학1",
+    "chapter": "04 사인법칙과 코사인법칙",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\overline{AC} = 2\\overline{BC} \\)",
+      "( \\overline{AM} = \\overline{MC} = \\overline{BC} \\)",
+      "( \\overline{BC} = k \\)"
+    ],
+    "rawDollars": [
+      "${distBM.toFixed(3)}`, mapX(M.x / 2) - 10, mapY(M.y / 2) - 15);\n\n        // --- Update Info Panel ---\n        const isMatch = Math.abs(t - 0.8) < 0.01;\n        const matchColor = isMatch ? '#2b8a3e' : '#e03131';\n\n        const areaABC = k * k * sinC;\n\n        infoPanel.innerHTML = `\n            <b>[실시간 기하학적 데이터]</b><br>\n            ▶ 선분 BM 길이: <span style=\"font-weight:bold;\">$",
+      "${areaABC.toFixed(2)}</span><br>\n            ▶ 사인 비율 (sin C / sin α): <span style=\"font-weight:bold; color:$",
+      "${currentRatio.toFixed(4)}</span> \n            <span style=\"font-size:0.9em\">(목표: 6/5√2 ≈ 0.8485)</span><br><br>\n            $"
+    ]
+  },
+  {
+    "id": 12,
+    "subject": "수학1",
+    "chapter": "04 사인법칙과 코사인법칙",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\angle QAC = \\angle ACB \\)",
+      "( \\angle APQ = \\angle CPB \\)",
+      "( \\triangle APQ \\sim \\triangle CPB \\)"
+    ],
+    "rawDollars": [
+      "${t.toFixed(3)}</span><br>\n            ▶ 원의 반지름 (R): <span style=\"font-weight:bold;\">2.50</span><br>\n            ▶ 중심에서 점 D까지의 거리: <span style=\"color:$",
+      "${distD.toFixed(3)}</span><br><br>\n            $"
+    ]
+  },
+  {
+    "id": 11,
+    "subject": "수학1",
+    "chapter": "03 삼각함수",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\frac{1}{2a})",
+      "(\\frac{1}{2a})",
+      "(let i = -1; i <= 1; i += 0.5)"
+    ],
+    "rawDollars": [
+      "$\\sin^2 x$",
+      "$1 - \\cos^2 x$",
+      "$t = \\cos x$"
+    ]
+  },
+  {
+    "id": 10,
+    "subject": "수학1",
+    "chapter": "03 삼각함수",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\( x=0, 2\\pi \\)",
+      "(\\frac{3\\pi}{2}\\right)",
+      "( \\sin a \\neq 0 \\)"
+    ],
+    "rawDollars": [
+      "${idx+1}`, mapX(r, w), rootY - 15);\n                ctx.fillStyle = '#2b8a3e';\n            });\n        }\n\n        // --- Update Info Panel ---\n        const cond2Match = Math.abs(f_2pi - 1) < 0.05;\n        const condMinMatch = Math.abs(global_min + 2) < 0.05;\n        \n        infoPanel.innerHTML = `\n            <b>[조건 확인]</b><br>\n            ▶ f(2π) = <span style=\"color:$",
+      "${f_2pi.toFixed(2)}</span> \n            <span style=\"font-size:0.9em\">(목표: 1.00 - 그래야 y=1 교점이 2개가 됨)</span><br>\n            ▶ 전역 최솟값 = <span style=\"color:$",
+      "${global_min.toFixed(2)}</span>\n            <span style=\"font-size:0.9em\">(목표: -2.00 - 조건 (나)에 의해)</span><br><br>\n            $"
+    ]
+  },
+  {
+    "id": 9,
+    "subject": "수학1",
+    "chapter": "03 삼각함수",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\frac{2\\pi}{b} \\)",
+      "( \\frac{4\\pi}{b} \\)",
+      "( \\sin(t + \\frac{\\pi}{2})"
+    ],
+    "rawDollars": [
+      "${idx+1}`, mapX(rx, w), y3 - 15);\n                ctx.fillStyle = '#2b8a3e';\n            });\n\n            // Draw connecting lines for visual measurement\n            ctx.strokeStyle = '#845ef7';\n            ctx.lineWidth = 2;\n            ctx.setLineDash([4, 4]);\n            \n            // L1 (Outer)\n            let lyOuter = y3 + 25;\n            ctx.beginPath(); ctx.moveTo(mapX(x1, w), y3); ctx.lineTo(mapX(x1, w), lyOuter); ctx.stroke();\n            ctx.beginPath(); ctx.moveTo(mapX(x4, w), y3); ctx.lineTo(mapX(x4, w), lyOuter); ctx.stroke();\n            ctx.setLineDash([]);\n            ctx.beginPath(); ctx.moveTo(mapX(x1, w), lyOuter); ctx.lineTo(mapX(x4, w), lyOuter); ctx.stroke();\n            ctx.fillStyle = '#845ef7';\n            ctx.textAlign = 'center';\n            ctx.fillText(`x4 - x1 = $",
+      "${(x3-x2).toFixed(2)}`, mapX((x2+x3)/2, w), lyInner + 15);\n\n            // HTML Panel Info\n            let isOuterMatch = Math.abs(distOuter - targetValue) < 0.15;\n            let isInnerMatch = Math.abs(distInner - targetValue) < 0.15;\n            \n            infoPanel.innerHTML = `\n                <b>[조건 비교] (목표값 5π ≈ 15.71)</b><br><br>\n                <span style=\"color:$",
+      "${distOuter.toFixed(2)} $"
+    ]
+  },
+  {
+    "id": 6,
+    "subject": "수학1",
+    "chapter": "02 지수함수와 로그함수",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\log_9 m = \\log_{3^2} m = \\frac{1}{2}\\log_3 m = \\log_3(m^{\\frac{1}{2}})",
+      "( \\sqrt{m} \\)",
+      "( \\sqrt{m} \\)"
+    ],
+    "rawDollars": [
+      "${n+2}, ..., $",
+      "${m}`, mapX(m, w) + 10, mapY(interY, h) - 10);\n\n        // Draw points\n        points.forEach(p => {\n            ctx.fillStyle = isAnswer ? '#2b8a3e' : '#845ef7';\n            ctx.beginPath();\n            ctx.arc(mapX(p.x, w), mapY(p.y, h), 4, 0, Math.PI*2);\n            ctx.fill();\n            \n            // Subtle ring around valid points\n            ctx.strokeStyle = isAnswer ? 'rgba(43, 138, 62, 0.5)' : 'rgba(132, 94, 247, 0.5)';\n            ctx.lineWidth = 2;\n            ctx.beginPath();\n            ctx.arc(mapX(p.x, w), mapY(p.y, h), 8, 0, Math.PI*2);\n            ctx.stroke();\n        });\n\n        // Update HTML Panel Info\n        infoPanel.innerHTML = `\n            설정값: k=<span class=\"highlight-text\">$",
+      "${m}</span>, n=<span class=\"highlight-text\">$"
+    ]
+  },
+  {
+    "id": 5,
+    "subject": "수학1",
+    "chapter": "02 지수함수와 로그함수",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\( y \\ge 5 \\)",
+      "(\\( [2, 6] \\)",
+      "(\\( 6 < t < 7.74 \\)"
+    ],
+    "rawDollars": [
+      "${a_squared}`, mapX(a_squared, w), yZero - 10);\n        } else {\n            // Arrow pointing right\n            ctx.fillStyle = isValid ? '#2b8a3e' : '#e03131';\n            ctx.font = 'bold 14px sans-serif';\n            ctx.fillText(`a²=$",
+      "${a}`, mapX(a, w), yZero - 10);\n\n        // Key Points Marker\n        ctx.fillStyle = '#1864ab';\n        ctx.beginPath(); ctx.arc(mapX(2, w), y5, 5, 0, Math.PI*2); ctx.fill();\n        ctx.beginPath(); ctx.arc(mapX(6, w), y5, 5, 0, Math.PI*2); ctx.fill();\n        ctx.fillText('(2,5)', mapX(2, w) - 10, y5 - 15);\n        ctx.fillText('(6,5)', mapX(6, w) + 15, y5 - 15);\n\n        ctx.fillStyle = '#e03131';\n        ctx.beginPath(); ctx.arc(mapX(dangerEnd, w), y5, 5, 0, Math.PI*2); ctx.fill();\n        ctx.fillText('4+√14', mapX(dangerEnd, w) + 20, y5 - 15);\n\n        // --- Update UI Text ---\n        const validClass = isValid ? 'valid' : 'invalid';\n        const validText = isValid ? 'O (성립)' : 'X (불성립)';\n        const overlapMsg = isValid \n            ? '구간 전체가 y≥5 영역에 포함됩니다.' \n            : '구간 중 y<5 로 떨어지는 부분이 존재합니다.';\n\n        statusDisplay.innerHTML = `\n            현재 <span style=\"color:#339af0\">a = $",
+      "${a}, $"
+    ]
+  },
+  {
+    "id": 4,
+    "subject": "수학1",
+    "chapter": "02 지수함수와 로그함수",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\( k \\)",
+      "(let i=0; i<maxIter; i++)",
+      "(let i = Math.ceil(view.xMin)"
+    ],
+    "rawDollars": [
+      "${k.toFixed(2)}$",
+      "${rootP.toFixed(3)}, $",
+      "${rootQ.toFixed(3)}, $"
+    ]
+  },
+  {
+    "id": 3,
+    "subject": "수학1",
+    "chapter": "01 지수와 로그",
+    "num": 3,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\log_m x \\)",
+      "( \\( k = 1, 2, 3, \\dots \\)",
+      "(\\( 2^7 = 128 > 100 \\)"
+    ],
+    "rawDollars": [
+      "${m}</sub> = { $",
+      "${m}</sub>) = $"
+    ]
+  },
+  {
+    "id": 2,
+    "subject": "수학1",
+    "chapter": "01 지수와 로그",
+    "num": 2,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "(\\( \\overline{DE} \\parallel \\overline{BC} \\)",
+      "(\\triangle ABE)",
+      "(\\triangle ADE)"
+    ],
+    "rawDollars": [
+      "${ratio.toFixed(2)}`, infoX + 15, infoY + 25);\n        \n        ctx.fillStyle = '#e03131';\n        ctx.fillText(`■ Area(ADE) 비례값: $"
+    ]
+  },
+  {
+    "id": 1,
+    "subject": "수학1",
+    "chapter": "01 지수와 로그",
+    "num": 1,
+    "hasWon": false,
+    "hasW": true,
+    "hasDollars": true,
+    "hasBracketMath": true,
+    "wonMatches": [],
+    "wMatches": [],
+    "bracketMatches": [
+      "( \\frac{1}{a} + \\frac{1}{b} \\)",
+      "( \\frac{4}{k} \\)",
+      "(\\( p \\)"
+    ],
+    "rawDollars": [
+      "${intersectB.toFixed(3)}`, infoX + 15, infoY + 25);\n        ctx.fillText(`■ 교점 a (y축) = 4 / k = $",
+      "${sumAB.toFixed(3)}`, infoX + 15, infoY + 70);\n\n        ctx.font = 'bold 14px sans-serif';\n        ctx.fillStyle = isKValid ? '#2b8a3e' : '#e03131';\n        \n        // Render rough 3^(a+b) format\n        let powerValStr = \"\";\n        if(Math.abs(k-1)<0.01) powerValStr = \"243 ∛3 (최댓값)\";\n        else if(Math.abs(k-2)<0.01) powerValStr = \"9 ∛9\";\n        else if(Math.abs(k-4)<0.01) powerValStr = \"3 ∛3 (최솟값)\";\n        else powerValStr = `3^($"
+    ]
+  }
+]

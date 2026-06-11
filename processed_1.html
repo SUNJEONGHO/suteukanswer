@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    options: {
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    }
+  };
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수능특강 수학 상호작용 해설</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #4dabf7;
+            --secondary-color: #ff8787;
+            --bg-color: #f8f9fa;
+            --text-color: #343a40;
+            --border-color: #dee2e6;
+            --highlight-color: #2b8a3e;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Panel: Explanation */
+        .left-panel {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+            background-color: #ffffff;
+            box-sizing: border-box;
+        }
+
+        .problem-desc {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .text-container {
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--highlight-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #b2f2bb;
+            padding-bottom: 5px;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .math-box {
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .interaction-prompt {
+            background-color: #e7f5ff;
+            border-left: 4px solid #339af0;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: 500;
+            margin: 20px 0;
+            color: #1864ab;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        /* Right Panel: Interactive Canvas */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-color);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            body, html {
+                overflow: auto;
+            }
+            .left-panel, .right-panel {
+                height: auto;
+            }
+            .right-panel {
+                min-height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-panel">
+        <img src="image_fca8e6.png" alt="원본 문제 이미지" class="problem-desc">
+        
+        <div class="text-container">
+            지수법칙과 자연수 조건을 활용하여 두 변수 \\(a, b \\)의 관계를 파악하고, 주어진 식의 최댓값과 최솟값을 구해보겠습니다.
+        </div>
+
+        <div class="step-title">Step 1: 조건 (가)를 통한 \\(a \\)와 \\(b \\)의 관계식 도출</div>
+        <div class="text-container">
+            조건 (가)에서 \\(3^a = 27^b \\)라고 하였습니다. \\(27 = 3^3 \\)이므로 이를 지수법칙으로 정리합니다.
+            <div class="math-box">\[ 3^a = \(3^3\)^b = 3^{3b} \]</div>
+            밑이 3으로 같으므로 지수끼리 같아야 합니다. 따라서 다음 관계를 얻습니다.
+            <div class="math-box">\[ a = 3b \]</div>
+        </div>
+
+        <div class="step-title">Step 2: 조건 (나)에 관계식 대입</div>
+        <div class="text-container">
+            조건 (나)에서 \\(\frac{1}{a} + \frac{1}{b} \\)가 자연수라고 하였습니다. 이 자연수를 \\(k \\)라고 합시다. Step 1에서 구한 \\(a = 3b \\)를 대입합니다.
+            <div class="math-box">\[ \frac{1}{3b} + \frac{1}{b} = \frac{1}{3b} + \frac{3}{3b} = \frac{4}{3b} = k \quad \(k \text{는 자연수}\) \]</div>
+            이를 \\(b \\)에 대해 정리하면 다음과 같습니다.
+            <div class="math-box">\[ b = \frac{4}{3k} \]</div>
+            \\(a = 3b \\)이므로 \\(a \\) 또한 \\(k \\)로 표현할 수 있습니다.
+            <div class="math-box">\[ a = 3 \times \frac{4}{3k} = \frac{4}{k} \]</div>
+        </div>
+
+        <div class="interaction-prompt text-container">
+            💡 우측 패널의 슬라이더를 움직여 자연수 \\(k \\)의 값이 변할 때, 두 그래프의 교점 \( (b, a) \)가 어떻게 이동하는지 확인해 보세요. \\(k \\)가 1, 2, 4일 때만 조건 (가)의 '자연수' 조건을 만족합니다!
+        </div>
+
+        <div class="step-title">Step 3: '그 값은 자연수이다' 조건 적용</div>
+        <div class="text-container">
+            조건 (가)에서 \\(3^a \\)의 '그 값은 자연수이다'라고 하였습니다. 우리가 구한 \\(a = \frac{4}{k} \\)를 대입해 봅니다.
+            <div class="math-box">\[ 3^a = 3^{\frac{4}{k}} \]</div>
+            이 값이 자연수가 되기 위해서는 지수인 \\(\frac{4}{k} \\)가 0 이상의 정수여야 합니다. \\(a, b \\)가 양수이므로 \\(k \\)는 양수이고, 따라서 \\(k \\)는 **4의 양의 약수**여야 합니다.
+            <div class="math-box">\[ k \in \{1, 2, 4\} \]</div>
+        </div>
+
+        <div class="step-title">Step 4: \\(3^a \times 3^b \\)의 최댓값\(\( p \\))과 최솟값\(\( q \\)) 구하기</div>
+        <div class="text-container">
+            우리가 구해야 할 식은 \\(3^a \times 3^b = 3^{a+b} \\)입니다. \\(a+b \\)를 \\(k \\)로 나타내면 다음과 같습니다.
+            <div class="math-box">\[ a+b = \frac{4}{k} + \frac{4}{3k} = \frac{16}{3k} \]</div>
+            따라서 \\(3^{a+b} = 3^{\frac{16}{3k}} \\) 입니다. \\(k \in \{1, 2, 4\} \\)를 각각 대입해 봅시다.
+            <ul>
+                <li>\\(k = 1 \\)일 때: \\(3^{\frac{16}{3}} = 3^5 \times 3^{\frac{1}{3}} = 243\sqrt[3]{3} \\) <b>\(최댓값 \( p \\))</b></li>
+                <li>\\(k = 2 \\)일 때: \\(3^{\frac{16}{6}} = 3^{\frac{8}{3}} = 3^2 \times 3^{\frac{2}{3}} = 9\sqrt[3]{9} \\)</li>
+                <li>\\(k = 4 \\)일 때: \\(3^{\frac{16}{12}} = 3^{\frac{4}{3}} = 3^1 \times 3^{\frac{1}{3}} = 3\sqrt[3]{3} \\) <b>\(최솟값 \( q \\))</b></li>
+            </ul>
+            최종적으로 \\(p - q \\)를 계산합니다.
+            <div class="math-box">\[ p - q = 243\sqrt[3]{3} - 3\sqrt[3]{3} = 240\sqrt[3]{3} \]</div>
+            따라서 정답은 <b>⑤ \\(240\sqrt[3]{3} \\)</b> 입니다.
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="canvas-container" id="canvasWrapper">
+            <canvas id="mathCanvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group text-container">
+                <label for="k-slider">자연수 매개변수 \\(k \\) \(\( \frac{1}{a} + \frac{1}{b} = k \\) )</label>
+                <input type="range" id="k-slider" min="0.5" max="5.0" step="0.05" value="1.0">
+                <div style="font-size: 0.9em; color: #495057;">
+                    현재 <span id="k-value" style="font-weight:bold; color:var(--primary-color);">1.00</span> 입니다. 
+                    <span id="k-status" style="font-weight:bold; color:var(--secondary-color);"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('mathCanvas');
+    const ctx = canvas.getContext('2d');
+    const wrapper = document.getElementById('canvasWrapper');
+    const slider = document.getElementById('k-slider');
+    const kValueDisplay = document.getElementById('k-value');
+    const kStatusDisplay = document.getElementById('k-status');
+
+    // Graph scale and offset
+    const graphConfig = {
+        xMin: -0.5, xMax: 2.5,
+        yMin: -1, yMax: 6,
+        padding: 40
+    };
+
+    function mapX(x, w) {
+        return graphConfig.padding + ((x - graphConfig.xMin) / (graphConfig.xMax - graphConfig.xMin)) * (w - 2 * graphConfig.padding);
+    }
+
+    function mapY(y, h) {
+        return h - graphConfig.padding - ((y - graphConfig.yMin) / (graphConfig.yMax - graphConfig.yMin)) * (h - 2 * graphConfig.padding);
+    }
+
+    function resizeCanvas() {
+        canvas.width = wrapper.clientWidth;
+        canvas.height = wrapper.clientHeight;
+        draw();
+    }
+
+    function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const k = parseFloat(slider.value);
+        kValueDisplay.textContent = k.toFixed(2);
+
+        // Check if k is valid (1, 2, or 4) within a small margin
+        const isKValid = Math.abs(k - 1) < 0.01 || Math.abs(k - 2) < 0.01 || Math.abs(k - 4) < 0.01;
+        
+        if (Math.abs(k - 1) < 0.01) kStatusDisplay.textContent = "(k=1: 최댓값 p 조건 만족!)";
+        else if (Math.abs(k - 4) < 0.01) kStatusDisplay.textContent = "(k=4: 최솟값 q 조건 만족!)";
+        else if (Math.abs(k - 2) < 0.01) kStatusDisplay.textContent = "(k=2: 조건 만족)";
+        else kStatusDisplay.textContent = "(3^a 가 자연수가 아님)";
+        kStatusDisplay.style.color = isKValid ? '#2b8a3e' : '#fa5252';
+
+        // Draw Grid
+        ctx.strokeStyle = '#e9ecef';
+        ctx.lineWidth = 1;
+        for(let i = Math.ceil(graphConfig.xMin); i <= graphConfig.xMax; i += 0.5) {
+            const x = mapX(i, w);
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for(let i = Math.ceil(graphConfig.yMin); i <= graphConfig.yMax; i++) {
+            const y = mapY(i, h);
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = '#adb5bd';
+        ctx.lineWidth = 2;
+        const xZero = mapX(0, w);
+        const yZero = mapY(0, h);
+        
+        // X-axis (b)
+        ctx.beginPath(); ctx.moveTo(0, yZero); ctx.lineTo(w, yZero); ctx.stroke();
+        // Y-axis (a)
+        ctx.beginPath(); ctx.moveTo(xZero, 0); ctx.lineTo(xZero, h); ctx.stroke();
+
+        // Axis Labels
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#495057';
+        ctx.fillText('b 축', w - graphConfig.padding + 5, yZero - 10);
+        ctx.fillText('a 축', xZero + 10, graphConfig.padding - 10);
+        ctx.fillText('0', xZero - 15, yZero + 15);
+
+        // Line 1: a = 3b (y = 3x)
+        ctx.strokeStyle = '#339af0'; // Blue
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let startX = Math.max(graphConfig.xMin, graphConfig.yMin / 3);
+        let endX = Math.min(graphConfig.xMax, graphConfig.yMax / 3);
+        ctx.moveTo(mapX(startX, w), mapY(3 * startX, h));
+        ctx.lineTo(mapX(endX, w), mapY(3 * endX, h));
+        ctx.stroke();
+
+        // Curve 2: 1/a + 1/b = k => a = b / (kb - 1)  (y = x / (kx - 1))
+        ctx.strokeStyle = '#ff8787'; // Red
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let isFirstPoint = true;
+        // Asymptote is at b = 1/k. We only care about positive quadrant a>0, b>0 => b > 1/k
+        for(let x = (1/k) + 0.02; x <= graphConfig.xMax; x += 0.02) {
+            let y = x / (k * x - 1);
+            if (y > graphConfig.yMax || y < graphConfig.yMin) continue;
+            
+            if (isFirstPoint) {
+                ctx.moveTo(mapX(x, w), mapY(y, h));
+                isFirstPoint = false;
+            } else {
+                ctx.lineTo(mapX(x, w), mapY(y, h));
+            }
+        }
+        ctx.stroke();
+
+        // Intersection Point: a = 4/k, b = 4/(3k)
+        const intersectB = 4 / (3 * k);
+        const intersectA = 4 / k;
+        
+        const px = mapX(intersectB, w);
+        const py = mapY(intersectA, h);
+
+        // Highlight valid points dynamically
+        if(isKValid) {
+            ctx.fillStyle = 'rgba(43, 138, 62, 0.2)';
+            ctx.beginPath();
+            ctx.arc(px, py, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw guidelines to axes
+            ctx.strokeStyle = '#adb5bd';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, yZero); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(xZero, py); ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        ctx.fillStyle = isKValid ? '#2b8a3e' : '#212529';
+        ctx.beginPath();
+        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Info Box on Canvas
+        const infoX = 20;
+        const infoY = 20;
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.strokeStyle = '#dee2e6';
+        ctx.beginPath();
+        ctx.roundRect(infoX, infoY, 260, 110, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#343a40';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(`■ 교점 b (x축) = 4 / 3k = ${intersectB.toFixed(3)}`, infoX + 15, infoY + 25);
+        ctx.fillText(`■ 교점 a (y축) = 4 / k = ${intersectA.toFixed(3)}`, infoX + 15, infoY + 45);
+        
+        const sumAB = intersectA + intersectB;
+        ctx.fillText(`■ a + b = ${sumAB.toFixed(3)}`, infoX + 15, infoY + 70);
+
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillStyle = isKValid ? '#2b8a3e' : '#e03131';
+        
+        // Render rough 3^(a+b) format
+        let powerValStr = "";
+        if(Math.abs(k-1)<0.01) powerValStr = "243 ∛3 (최댓값)";
+        else if(Math.abs(k-2)<0.01) powerValStr = "9 ∛9";
+        else if(Math.abs(k-4)<0.01) powerValStr = "3 ∛3 (최솟값)";
+        else powerValStr = `3^(${sumAB.toFixed(2)})`;
+
+        ctx.fillText(`▶ 3^(a+b) = ${powerValStr}`, infoX + 15, infoY + 95);
+    }
+
+    // Event Listeners
+    window.addEventListener('resize', resizeCanvas);
+    slider.addEventListener('input', draw);
+
+    // Initial Setup
+    window.onload = resizeCanvas;
+
+</script>
+
+</body>
+</html>

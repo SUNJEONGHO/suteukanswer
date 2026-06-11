@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+      displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+      processEscapes: true
+    },
+    options: {
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    }
+  };
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수능특강 수학 인터랙티브 해설</title>
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --accent: #f72585;
+            --bg-color: #f8f9fa;
+            --panel-bg: #ffffff;
+            --text-color: #2b2d42;
+            --border-color: #e9ecef;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .left-panel {
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .problem-desc {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        .problem-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: block;
+        }
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .step {
+            margin-bottom: 2.5rem;
+            word-break: keep-all;
+            line-height: 1.6;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+        .step h3 {
+            font-size: 1.15rem;
+            color: #ffffff;
+            background-color: var(--primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.2rem;
+            display: inline-block;
+        }
+        .math-box {
+            background-color: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border-left: 4px solid var(--secondary);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.02);
+        }
+        .highlight-text {
+            background-color: #e0e8ff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            color: var(--secondary);
+            border-left: 4px solid var(--primary);
+            margin: 1rem 0;
+        }
+        
+        /* Right Panel Elements */
+        .canvas-container {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        canvas {
+            width: 100%;
+            height: 350px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .controls {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+        .slider-group label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            height: 6px;
+            background: #dee2e6;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        .status-box {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .info-cell {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .info-cell span {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .s-val { color: var(--primary); }
+        .a-val { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="left-panel">
+        <div class="problem-desc">
+            <img src="image_ee19c2.png" alt="수학 문제 원본 이미지" class="problem-img">
+        </div>
+        
+        <h2>단계별 해설</h2>
+        
+        <div class="step">
+            <h3>Step 1: 시그마 내부 식의 구조 파악 (부분분수/망원급수)</h3>
+            <p>
+                수열의 합 \( S_n \)과 일반항 \( a_n \) 사이의 관계에 의해, \( k \ge 1 \)인 자연수에 대해 \( a_{k+1} = S_{k+1} - S_k \) 가 성립합니다. <br>
+                이를 주어진 식의 시그마 내부에 있는 분수식에 대입해 봅시다.
+            </p>
+            <div class="math-box">
+                \[ \frac{a_{k+1}}{S_k S_{k+1}} = \frac{S_{k+1} - S_k}{S_k S_{k+1}} = \frac{1}{S_k} - \frac{1}{S_{k+1}} \]
+            </div>
+            <p>
+                위와 같이 식이 변형되며, 이는 연쇄적으로 소거되는 형태(Telescoping sum)가 됨을 알 수 있습니다.
+            </p>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: 주어진 식 정리 및 \( S_n \) 일반항 도출</h3>
+            <p>
+                Step 1에서 구한 식을 원래의 시그마에 대입하여 계산합니다.
+            </p>
+            <div class="math-box">
+                \[ \sum_{k=1}^n \left( \frac{1}{S_k} - \frac{1}{S_{k+1}} \right) = \left( \frac{1}{S_1} - \frac{1}{S_2} \right) + \dots + \left( \frac{1}{S_n} - \frac{1}{S_{n+1}} \right) \]
+                \[ = \frac{1}{S_1} - \frac{1}{S_{n+1}} \]
+            </div>
+            <p>
+                문제에서 첫째항 \( a_1 = 1 \) 이므로 \( S_1 = 1 \) 입니다. 따라서 시그마의 계산 결과는 \( 1 - \frac{1}{S_{n+1}} \) 이 됩니다. <br>
+                이제 원래 주어진 등식에 이 결과를 대입해 보겠습니다.
+            </p>
+            <div class="math-box">
+                \[ S_n \times \left( 1 - \frac{1}{S_{n+1}} \right) = S_n + 2 \]
+                \[ S_n - \frac{S_n}{S_{n+1}} = S_n + 2 \]
+                \[ -\frac{S_n}{S_{n+1}} = 2 \quad \implies \quad S_{n+1} = -\frac{1}{2}S_n \]
+            </div>
+            <p>
+                따라서 수열 \( \{S_n\} \)은 첫째항이 \( 1 \)이고 공비가 \( -\frac{1}{2} \)인 등비수열입니다. <br>
+                결론적으로, <strong>\( S_n = \left(-\frac{1}{2}\right)^{n-1} \)</strong> 입니다.
+            </p>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: 수열 \( a_n \)의 일반항과 특징 관찰</h3>
+            <p class="highlight-text">
+                💡 우측 슬라이더를 움직여 n번째 항이 변할 때, 부분합 \( S_n \)과 일반항 \( a_n \)의 값이 어떻게 진동하며 수렴하는지 그래프로 직접 확인해 보세요!
+            </p>
+            <p>
+                \( n \ge 2 \)일 때, 일반항 \( a_n \)을 구하면 다음과 같습니다.
+            </p>
+            <div class="math-box">
+                \[ a_n = S_n - S_{n-1} = \left(-\frac{1}{2}\right)^{n-1} - \left(-\frac{1}{2}\right)^{n-2} \]
+                \[ a_n = \left(-\frac{1}{2}\right)^{n-2} \left( -\frac{1}{2} - 1 \right) = -\frac{3}{2} \left(-\frac{1}{2}\right)^{n-2} \]
+            </div>
+            <p>
+                단, \( n=1 \)일 때는 \( a_1 = 1 \) 입니다. <br>
+                수열 \( a_n \)도 \( n \ge 2 \)부터는 공비가 \( -\frac{1}{2} \)인 등비수열 형태를 띠며, 부호가 교대로 나타납니다.
+            </p>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: \( \sum_{k=1}^5 a_{2k-1} \) 값 계산하기</h3>
+            <p>
+                구하고자 하는 값은 홀수 번째 항들의 합, 즉 \( a_1 + a_3 + a_5 + a_7 + a_9 \) 입니다.
+            </p>
+            <div class="math-box">
+                \( a_1 = 1 \) <br>
+                \( a_3 = -\frac{3}{2}\left(-\frac{1}{2}\right)^1 = \frac{3}{4} \) <br>
+                \( a_5 = -\frac{3}{2}\left(-\frac{1}{2}\right)^3 = \frac{3}{16} \) <br>
+                \( a_7 = -\frac{3}{2}\left(-\frac{1}{2}\right)^5 = \frac{3}{64} \) <br>
+                \( a_9 = -\frac{3}{2}\left(-\frac{1}{2}\right)^7 = \frac{3}{256} \)
+            </div>
+            <p>
+                이 항들을 모두 더하면 다음과 같습니다.
+            </p>
+            <div class="math-box">
+                \[ \sum_{k=1}^5 a_{2k-1} = 1 + \frac{3}{4} + \frac{3}{16} + \frac{3}{64} + \frac{3}{256} \]
+                \[ = 1 + \frac{\frac{3}{4} \left( 1 - \left(\frac{1}{4}\right)^4 \right)}{1 - \frac{1}{4}} = 1 + \left( 1 - \frac{1}{256} \right) = 2 - \frac{1}{256} = \frac{511}{256} \]
+            </div>
+            <p>정답은 <strong>⑤ \( \frac{511}{256} \)</strong> 입니다.</p>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="canvas-container">
+            <h3 style="margin-top: 0; color: var(--text-color); margin-bottom: 10px;">수열의 항 값 시각화</h3>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--primary);"></div>
+                    <span>부분합 \( S_k \)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--accent);"></div>
+                    <span>일반항 \( a_k \)</span>
+                </div>
+            </div>
+
+            <canvas id="mathCanvas" width="600" height="350"></canvas>
+            <p style="font-size: 0.9rem; color: #6c757d; margin: 0;">
+                X축: 항의 번호 (k), Y축: 수열의 값<br>공비가 음수이므로 부호가 진동하며 0에 수렴하는 모습이 나타납니다.
+            </p>
+        </div>
+
+        <div class="controls">
+            <div class="slider-group">
+                <label for="nSlider">관찰할 항의 위치 (n): <span id="nValue" style="color: var(--primary); font-size: 1.3rem;">1</span></label>
+                <input type="range" id="nSlider" min="1" max="10" step="1" value="1">
+            </div>
+
+            <div class="status-box">
+                <strong style="display: block; margin-bottom: 10px; color: #495057;">선택된 제 \( n \)항의 상세 값</strong>
+                <div class="grid-info" id="statusBox">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mathCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('nSlider');
+        const nValueLabel = document.getElementById('nValue');
+        const statusBox = document.getElementById('statusBox');
+
+        // 배열로 미리 계산된 정확한 수식 문자열과 실수 값 생성
+        const s_values = [];
+        const a_values = [];
+        const s_texts = [];
+        const a_texts = [];
+
+        for (let i = 1; i <= 10; i++) {
+            // S_n
+            let s_val = Math.pow(-0.5, i - 1);
+            s_values.push(s_val);
+            
+            let s_sign = s_val < 0 ? "-" : "";
+            let s_denom = Math.pow(2, i - 1);
+            s_texts.push(s_denom === 1 ? `${s_sign}1` : `${s_sign}1/${s_denom}`);
+
+            // a_n
+            let a_val;
+            let a_text;
+            if (i === 1) {
+                a_val = 1;
+                a_text = "1";
+            } else {
+                a_val = -1.5 * Math.pow(-0.5, i - 2);
+                let a_sign = a_val < 0 ? "-" : "";
+                let a_num = 3;
+                let a_denom = Math.pow(2, i - 1);
+                a_text = `${a_sign}${a_num}/${a_denom}`;
+            }
+            a_values.push(a_val);
+            a_texts.push(a_text);
+        }
+
+        function drawGraph() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const paddingX = 40;
+            const paddingY = 40;
+            const nIndex = parseInt(slider.value);
+
+            ctx.clearRect(0, 0, width, height);
+
+            // 그래프 축 범위 설정
+            const minX = 1, maxX = 10;
+            const minY = -2, maxY = 2; // a_2가 -1.5이므로 여유있게 -2~2
+
+            function mapX(x) {
+                return paddingX + ((x - minX) / (maxX - minX)) * (width - 2 * paddingX);
+            }
+            function mapY(y) {
+                return height - paddingY - ((y - minY) / (maxY - minY)) * (height - 2 * paddingY);
+            }
+
+            // Draw Y Grid and Y-axis labels
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.font = "12px Pretendard";
+            
+            for (let y = minY; y <= maxY; y += 0.5) {
+                const py = mapY(y);
+                ctx.beginPath();
+                ctx.moveTo(paddingX, py);
+                ctx.lineTo(width - paddingX, py);
+                ctx.strokeStyle = y === 0 ? "#adb5bd" : "#f1f3f5";
+                ctx.lineWidth = y === 0 ? 2 : 1;
+                ctx.stroke();
+
+                ctx.fillStyle = "#868e96";
+                ctx.fillText(y.toFixed(1), paddingX - 10, py);
+            }
+
+            // Draw X-axis ticks and labels
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            for (let x = 1; x <= 10; x++) {
+                const px = mapX(x);
+                ctx.beginPath();
+                ctx.moveTo(px, mapY(0) - 5);
+                ctx.lineTo(px, mapY(0) + 5);
+                ctx.strokeStyle = "#adb5bd";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = (x === nIndex) ? "#000000" : "#868e96";
+                ctx.font = (x === nIndex) ? "bold 14px Pretendard" : "12px Pretendard";
+                ctx.fillText(x, px, mapY(0) + 12);
+            }
+
+            // Draw Line Plot function
+            function drawLinePlot(data, color, highlightIndex) {
+                ctx.beginPath();
+                for (let i = 0; i < 10; i++) {
+                    const px = mapX(i + 1);
+                    const py = mapY(data[i]);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.strokeStyle = color + "88"; // 투명도 추가
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                for (let i = 0; i < 10; i++) {
+                    const px = mapX(i + 1);
+                    const py = mapY(data[i]);
+                    
+                    ctx.beginPath();
+                    ctx.arc(px, py, (i + 1 === highlightIndex) ? 6 : 4, 0, Math.PI * 2);
+                    ctx.fillStyle = (i + 1 === highlightIndex) ? color : "#ffffff";
+                    ctx.fill();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = (i + 1 === highlightIndex) ? 3 : 2;
+                    ctx.stroke();
+                }
+            }
+
+            // 강조 수직선 그리기
+            const highlightX = mapX(nIndex);
+            ctx.beginPath();
+            ctx.moveTo(highlightX, paddingY);
+            ctx.lineTo(highlightX, height - paddingY);
+            ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.setLineDash([5, 5]);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.setLineDash([]); // 리셋
+
+            // 데이터 플롯
+            drawLinePlot(s_values, "#4361ee", nIndex); // S_n 파란색
+            drawLinePlot(a_values, "#f72585", nIndex); // a_n 핑크색
+
+            // Update UI
+            nValueLabel.textContent = nIndex;
+            
+            const isOdd = nIndex % 2 !== 0;
+            const oddBadgeHTML = isOdd 
+                ? `<div style="grid-column: 1 / 3; text-align: center; color: #d90429; font-weight: bold; font-size: 0.95rem; margin-bottom: 5px;">📍 문제에서 요구하는 '홀수 번째 항' 입니다!</div>` 
+                : '';
+
+            statusBox.innerHTML = `
+                ${oddBadgeHTML}
+                <div class="info-cell">
+                    부분합 \\( S_{${nIndex}} \\)
+                    <span class="s-val">${s_texts[nIndex - 1]}</span>
+                </div>
+                <div class="info-cell">
+                    일반항 \\( a_{${nIndex}} \\)
+                    <span class="a-val">${a_texts[nIndex - 1]}</span>
+                </div>
+            `;
+            
+            // Re-render MathJax inside the status box dynamically
+            if (window.MathJax) {
+                MathJax.typesetPromise([statusBox]).catch((err) => console.log('MathJax error: ', err.message));
+            }
+        }
+
+        slider.addEventListener('input', drawGraph);
+        
+        // Initial render
+        window.onload = () => {
+            drawGraph();
+        };
+    </script>
+</body>
+</html>
