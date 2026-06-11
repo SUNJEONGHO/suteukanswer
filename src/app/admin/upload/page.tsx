@@ -1,9 +1,10 @@
 'use client';
-
+ 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Save, Code, Eye, ChevronRight } from 'lucide-react';
 import { SUBJECT_CHAPTERS, SUBJECTS } from '@/lib/constants';
+import { processMathJaxHtml } from '@/lib/math';
 
 function UploadForm() {
   const router = useRouter();
@@ -245,7 +246,7 @@ function UploadForm() {
             <div className="flex-1 p-0 relative bg-[#F9FAFB] dark:bg-gray-900 transition-colors">
               {contentHtml ? (
                 <iframe
-                  srcDoc={contentHtml ? contentHtml.replace(/<img[^>]*>/gi, '') + `
+                  srcDoc={contentHtml ? processMathJaxHtml(contentHtml).replace(/<img[^>]*>/gi, '') + `
 <style>
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }

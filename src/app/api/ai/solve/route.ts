@@ -56,9 +56,18 @@ HTML 코드(contentHtml) 작성 지침:
    - 우측 패널의 Canvas 인터랙티브 시각화는 반드시 이 원본 이미지에 나타난 기하학적/그래프적 상황을 모델링하여 구현해야 합니다.
 3. 완벽한 수식 렌더링 (Strict LaTeX & MathJax):
    - 첨자(아랫첨자 _, 윗첨자/제곱 ^)가 절대 깨지지 않도록, 단 하나의 수학 변수(예: x, a, n)나 숫자라도 예외 없이 MathJax 딜리미터 안에 작성하세요.
-   - 인라인 수식은 \\( \\), 블록 수식은 <div class="math-box">\\[ \\]</div>를 사용하세요.
-   - HTML 마크다운(기울임꼴 * 등)과 LaTeX 문법이 충돌하지 않도록, 수식 내에서는 오직 순수 LaTeX 문법만 사용하세요. (예: \\( x_1^2 + y_2^3 \\))
-   - MathJax 렌더링을 위해 HTML 문서의 <head> 영역에 다음 스크립트를 반드시 포함해 주세요. (주의: polyfill.io는 보안 문제가 있으므로 절대 포함하지 마세요):
+   - 인라인 수식은 $ $ 또는 \\( \\) 를 사용하고, 블록 수식은 $$ $$ 또는 <div class="math-box">\\[ \\]</div>를 사용하세요. (달러 기호 $를 인라인 수식 구분자로 적극 지원합니다.)
+   - LaTeX 수식 작성 시 백슬래시(\) 기호는 JSON 응답 규격("contentHtml" 문자열 내부)에 맞게 반드시 이중 백슬래시(\\)로 작성해야 최종 파싱 후 HTML 문서에 백슬래시(\)로 온전히 보존됩니다. 예: \\\\times, \\\\le, \\\\ge, \\\\alpha. 절대 Wtimes나 ₩times 처럼 백슬래시가 깨져 출력되지 않도록 주의하세요.
+   - MathJax 렌더링을 위해 HTML 문서의 <head> 영역에 다음 설정을 반드시 포함해 주세요. (주의: polyfill.io는 보안 문제가 있으므로 절대 포함하지 마세요):
+     <script>
+       window.MathJax = {
+         tex: {
+           inlineMath: [['$', '$'], ['\\\\\\\\(', '\\\\\\\\)']],
+           displayMath: [['$$', '$$'], ['\\\\\\\\[', '\\\\\\\\]']],
+           processEscapes: true
+         }
+       };
+     </script>
      <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 4. 핵심 기능: 사용자 변수 조작 (Interactive Parameter Control):
    - 문제를 분석하여 그래프의 형태나 위치에 영향을 주는 핵심 매개변수(예: 평행이동 변수, 기울기, 곡률, 교점의 기준선 등)를 최소 1~2개 도출하세요.

@@ -4,6 +4,7 @@ import { ChevronLeft, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ViewTracker } from '@/components/ViewTracker';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { processMathJaxHtml } from '@/lib/math';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,6 +79,11 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     notFound();
   }
 
+  // Pre-process HTML content to fix MathJax and raw LaTeX backslash rendering issues
+  const processedHtml = problem.contentHtml 
+    ? processMathJaxHtml(problem.contentHtml).replace(/<img[^>]*>/gi, '') 
+    : '';
+
   return (
     <div className="min-h-screen bg-[#F2F4F6] dark:bg-gray-900 flex flex-col font-sans transition-colors">
       <ViewTracker id={id} />
@@ -111,7 +117,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
             execute properly without breaking the Next.js parent application layout.
           */}
           <iframe 
-            srcDoc={problem.contentHtml ? problem.contentHtml.replace(/<img[^>]*>/gi, '') + `
+            srcDoc={processedHtml ? processedHtml + `
 <style>
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
