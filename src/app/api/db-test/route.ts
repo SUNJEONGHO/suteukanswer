@@ -5,7 +5,7 @@ export async function GET() {
   try {
     await initDb();
     // Verify query connection
-    const checkRes = await sql`SELECT 1 as connected`;
+    await sql`SELECT 1 as connected`;
     
     // Count the problems in the postgres table
     const countRes = await sql`SELECT COUNT(*) FROM problems`;
@@ -17,12 +17,13 @@ export async function GET() {
       problemsCount: count,
       envUrlExists: !!process.env.POSTGRES_URL,
     });
-  } catch (error: any) {
-    console.error('Database connection test failed:', error);
+  } catch (err: unknown) {
+    console.error('Database connection test failed:', err);
+    const error = err as Error;
     return NextResponse.json({
       status: 'error',
       message: 'Failed to connect to Vercel Postgres',
-      error: error.message || String(error),
+      error: error.message || String(err),
       envUrlExists: !!process.env.POSTGRES_URL,
       envUrlPreview: process.env.POSTGRES_URL
         ? `${process.env.POSTGRES_URL.substring(0, 20)}...`

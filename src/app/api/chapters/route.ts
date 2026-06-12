@@ -24,10 +24,11 @@ export async function GET(request: Request) {
     const chapters = result.rows.map(row => row.chapter);
 
     return NextResponse.json({ chapters });
-  } catch (error: any) {
-    console.error('Error in GET /api/chapters:', error);
+  } catch (err: unknown) {
+    console.error('Error in GET /api/chapters:', err);
+    const error = err as Error;
     return NextResponse.json(
-      { error: error.message || String(error) },
+      { error: error.message || String(err) },
       { status: 500 }
     );
   }

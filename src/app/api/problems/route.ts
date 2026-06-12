@@ -66,10 +66,11 @@ export async function POST(request: Request) {
       { message: 'Problem created successfully', id: insertResult.rows[0].id.toString() },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error('Error in POST /api/problems:', error);
+  } catch (err: unknown) {
+    console.error('Error in POST /api/problems:', err);
+    const error = err as Error;
     return NextResponse.json(
-      { error: error.message || String(error) },
+      { error: error.message || String(err) },
       { status: 500 }
     );
   }
@@ -177,10 +178,11 @@ export async function GET(request: Request) {
     }));
 
     return NextResponse.json({ problems });
-  } catch (error: any) {
-    console.error('Error in GET /api/problems:', error);
+  } catch (err: unknown) {
+    console.error('Error in GET /api/problems:', err);
+    const error = err as Error;
     return NextResponse.json(
-      { error: error.message || String(error) },
+      { error: error.message || String(err) },
       { status: 500 }
     );
   }
@@ -212,10 +214,11 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ message: 'Problem deleted successfully' });
-  } catch (error: any) {
-    console.error('Error in DELETE /api/problems:', error);
+  } catch (err: unknown) {
+    console.error('Error in DELETE /api/problems:', err);
+    const error = err as Error;
     return NextResponse.json(
-      { error: error.message || String(error) },
+      { error: error.message || String(err) },
       { status: 500 }
     );
   }

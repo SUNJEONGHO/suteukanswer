@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { sql, initDb } from '@/lib/db';
+import { initDb, sql } from '@/lib/db';
 import { processMathJaxHtml } from '@/lib/math';
 
 export const dynamic = 'force-dynamic';
+
 
 export async function GET(
   request: Request,
@@ -148,8 +148,9 @@ export async function GET(
         'Cache-Control': 'no-store, must-revalidate',
       },
     });
-  } catch (error: any) {
-    console.error('Error rendering dynamic HTML problem view:', error);
+  } catch (err: unknown) {
+    console.error('Error rendering dynamic HTML problem view:', err);
+    const error = err as Error;
     return new Response(`Error rendering problem HTML: ${error.message || error}`, { status: 500 });
   }
 }

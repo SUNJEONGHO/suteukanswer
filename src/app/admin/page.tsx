@@ -6,8 +6,20 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const dynamic = 'force-dynamic';
 
+interface ProblemDashboardItem {
+  _id: string;
+  id: number;
+  subject: string;
+  chapter: string;
+  problemNumber: number;
+  description: string;
+  views: number;
+  createdAt: Date;
+  updatedAt: Date | null;
+}
+
 export default async function AdminDashboard() {
-  let problems: any[] = [];
+  let problems: ProblemDashboardItem[] = [];
   let connectionError = '';
 
   try {
@@ -27,9 +39,10 @@ export default async function AdminDashboard() {
       createdAt: row.created_at,
       updatedAt: row.updated_at
     }));
-  } catch (error: any) {
-    console.error('Failed to fetch problems in AdminDashboard:', error);
-    connectionError = error.message || String(error);
+  } catch (err: unknown) {
+    console.error('Failed to fetch problems in AdminDashboard:', err);
+    const error = err as Error;
+    connectionError = error.message || String(err);
   }
 
   if (connectionError) {

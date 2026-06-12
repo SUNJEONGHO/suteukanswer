@@ -4,8 +4,8 @@
 <script>
   window.MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-      displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\\[', '\\\]']],
       processEscapes: true
     },
     options: {
@@ -13,6 +13,68 @@
       processHtmlClass: 'tex2jax_process'
     }
   };
+</script>
+<script>
+  // 슬라이더 조작 등으로 본문이 동적 변경될 때 MathJax 수식 렌더링을 자동으로 트리거해주는 MutationObserver 주입
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.MathJax) {
+      var observer = new MutationObserver(function(mutations) {
+        var shouldTypeset = false;
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList' || mutation.type === 'characterData') {
+            var target = mutation.target;
+            if (!target) return;
+            var element = target.nodeType === 1 ? target : target.parentElement;
+            if (!element) return;
+            if (element.closest && (element.closest('.mjx-container') || element.closest('script') || element.closest('style'))) {
+              return;
+            }
+            if (element.closest && (
+              element.closest('.status-box') || 
+              element.closest('[id*="status"]') || 
+              element.closest('[id*="Status"]') || 
+              element.closest('.grid-info') || 
+              element.closest('.legend')
+            )) {
+              shouldTypeset = true;
+            }
+          }
+        });
+        if (shouldTypeset) {
+          if (window.mathJaxTimeout) clearTimeout(window.mathJaxTimeout);
+          window.mathJaxTimeout = setTimeout(function() {
+            var targets = document.querySelectorAll('.status-box, [id*="status"], [id*="Status"], .grid-info, .legend');
+            if (targets.length > 0) {
+              observer.disconnect();
+              var promises = [];
+              targets.forEach(function(el) {
+                promises.push(MathJax.typesetPromise([el]));
+              });
+              Promise.all(promises).then(function() {
+                observer.observe(document.body, {
+                  childList: true,
+                  subtree: true,
+                  characterData: true
+                });
+              }).catch(function(err) {
+                console.log('Dynamic typesetting error:', err);
+                observer.observe(document.body, {
+                  childList: true,
+                  subtree: true,
+                  characterData: true
+                });
+              });
+            }
+          }, 60);
+        }
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    }
+  });
 </script>
 
     <meta charset="UTF-8">

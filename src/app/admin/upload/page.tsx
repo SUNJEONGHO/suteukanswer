@@ -40,16 +40,11 @@ function UploadForm() {
         } else {
           setError('해당 문제를 불러올 수 없습니다.');
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Error fetching problem:', err);
         setError('문제 데이터를 불러오는 과정에서 오류가 발생했습니다.');
       }
     };
-
-    const list = SUBJECT_CHAPTERS[subject] || [];
-    if (list.length > 0 && !chapter) {
-      setChapter(list[0]);
-    }
 
     fetchProblem();
   }, [id]);
@@ -59,9 +54,15 @@ function UploadForm() {
     if (id) return; // 수정 모드일 때는 덮어쓰지 않음
     const list = SUBJECT_CHAPTERS[subject] || [];
     if (list.length > 0) {
-      setChapter(list[0]);
+      const timer = setTimeout(() => {
+        setChapter(list[0]);
+      }, 0);
+      return () => clearTimeout(timer);
     } else {
-      setChapter('');
+      const timer = setTimeout(() => {
+        setChapter('');
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [subject, id]);
 
@@ -102,7 +103,8 @@ function UploadForm() {
         const data = await res.json();
         setError(data.error || '저장 중 오류가 발생했습니다.');
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error('Error submitting form:', err);
       setError('서버와 통신 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

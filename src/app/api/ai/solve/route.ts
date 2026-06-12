@@ -168,8 +168,8 @@ HTML 코드(contentHtml) 작성 지침:
       if (solvedData && typeof solvedData.contentHtml === 'string') {
         solvedData.contentHtml = solvedData.contentHtml.replace(/%%PROBLEM_IMAGE_BASE64%%/g, image);
       }
-    } catch (parseError) {
-      console.error('Failed to parse Gemini output as JSON. Output:', resultText);
+    } catch (parseError: unknown) {
+      console.error('Failed to parse Gemini output as JSON. Output:', resultText, parseError);
       return NextResponse.json(
         { error: 'Gemini가 JSON 포맷의 결과를 반환하지 않았습니다.', rawOutput: resultText },
         { status: 500 }
@@ -177,10 +177,11 @@ HTML 코드(contentHtml) 작성 지침:
     }
 
     return NextResponse.json(solvedData);
-  } catch (error: any) {
-    console.error('Error in POST /api/ai/solve:', error);
+  } catch (err: unknown) {
+    console.error('Error in POST /api/ai/solve:', err);
+    const error = err as Error;
     return NextResponse.json(
-      { error: error.message || String(error) },
+      { error: error.message || String(err) },
       { status: 500 }
     );
   }

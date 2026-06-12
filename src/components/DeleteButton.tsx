@@ -22,7 +22,8 @@ export default function DeleteButton({ id }: { id: string }) {
           alert('삭제에 실패했습니다.');
           setIsDeleting(false);
         }
-      } catch (error) {
+      } catch (error: unknown) {
+        console.error('Delete error:', error);
         alert('서버와 통신 중 오류가 발생했습니다.');
         setIsDeleting(false);
       }

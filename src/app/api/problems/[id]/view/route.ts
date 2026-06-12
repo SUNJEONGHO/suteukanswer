@@ -27,8 +27,8 @@ export async function POST(
     }
 
     return NextResponse.json({ views: result.rows[0].views });
-  } catch (error: any) {
-    console.error('Error incrementing view count:', error);
+  } catch (err: unknown) {
+    console.error('Error incrementing view count:', err);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }

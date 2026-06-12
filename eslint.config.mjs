@@ -12,6 +12,16 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "scratch/**",
+    "original_*.html",
+    "processed_*.html",
+    "original.html",
+    "processed.html",
+    "test.html",
+    "desmos.html",
+    "check_models.js",
+    "fetch_db.js",
+    "fetch_desmos.js",
   ]),
 ]);
 
