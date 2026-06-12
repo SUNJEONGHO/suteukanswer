@@ -17,7 +17,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('adminAuth');
       if (stored === 'true') {
-        setIsAuthorized(true);
+        const timer = setTimeout(() => {
+          setIsAuthorized(true);
+        }, 0);
+        return () => clearTimeout(timer);
       }
     }
   }, []);

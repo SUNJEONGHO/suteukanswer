@@ -7,6 +7,18 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const dynamic = 'force-dynamic';
 
+interface Problem {
+  _id: string;
+  id: number;
+  subject: string;
+  chapter: string;
+  problemNumber: number;
+  description: string;
+  contentHtml: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export default async function ProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
@@ -16,7 +28,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
     notFound();
   }
 
-  let problem: any = null;
+  let problem: Problem | null = null;
   let connectionError = '';
 
   try {
@@ -36,9 +48,9 @@ export default async function ProblemPage({ params }: { params: Promise<{ id: st
         updatedAt: row.updated_at
       };
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch problem in ProblemPage:', error);
-    connectionError = error.message || String(error);
+    connectionError = error instanceof Error ? error.message : String(error);
   }
 
   if (connectionError) {

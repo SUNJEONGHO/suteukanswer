@@ -29,19 +29,24 @@ export default function Home() {
   // 과목이 변경되면 해당 과목의 첫 단원을 기본값으로 설정
   useEffect(() => {
     const list = SUBJECT_CHAPTERS[subject] || [];
-    if (list.length > 0) {
-      setChapter(list[0]);
-    } else {
-      setChapter('');
-    }
+    const timer = setTimeout(() => {
+      if (list.length > 0) {
+        setChapter(list[0]);
+      } else {
+        setChapter('');
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [subject]);
 
   // 단원이 선택되면 해당 단원에 등록된 문제 목록을 불러옴
   useEffect(() => {
     if (!chapter) {
-      setProblems([]);
-      setProblemNumber('');
-      return;
+      const timer = setTimeout(() => {
+        setProblems([]);
+        setProblemNumber('');
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     const fetchProblems = async () => {
@@ -63,9 +68,9 @@ export default function Home() {
           setProblems([]);
           setProblemNumber('');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to fetch problems:', err);
-        setError(err.message || '문제 목록을 불러오는 중 오류가 발생했습니다. 데이터베이스 연결을 확인해주세요.');
+        setError(err instanceof Error ? err.message : '문제 목록을 불러오는 중 오류가 발생했습니다. 데이터베이스 연결을 확인해주세요.');
         setProblems([]);
         setProblemNumber('');
       } finally {
@@ -111,8 +116,8 @@ export default function Home() {
       } else {
         setError('검색 결과가 없습니다.');
       }
-    } catch (err: any) {
-      setError(err.message || '검색 중 오류가 발생했습니다.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '검색 중 오류가 발생했습니다.');
     } finally {
       setIsSearching(false);
     }
@@ -167,7 +172,7 @@ export default function Home() {
           {/* Search Results */}
           {searchResults.length > 0 && (
             <div className="mt-4 space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-              {searchResults.map((p: any) => (
+              {searchResults.map((p: ProblemData) => (
                 <Link key={p._id} href={`/problem/${p._id}`}>
                   <div className="p-3 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-600 flex justify-between items-center">
                     <div>
